@@ -14,42 +14,41 @@ cd cli-commander
 mvn clean package
 ```
 
-<details>
-  <summary>Run</summary>
+## Run
 
-  ```sh
-  git clone https://github.com/m1ra9e/cli-commander.git cli-commander
-  cd cli-commander
-  mvn clean package
-  cd target
-  java -jar vehicle-cli-1.0.0.jar -d car,truck,motorcycle
-  ```
-  > these arguments are taken as an example only : `-d car,truck,motorcycle`
+```sh
+git clone https://github.com/m1ra9e/cli-commander.git cli-commander
+cd cli-commander
+mvn clean package
+cd target
+java -jar vehicle-cli-1.0.0.jar -d car,truck,motorcycle
+```
 
-</details>
+> these arguments are taken as an example only : `-d car,truck,motorcycle`
 
-<details>
-  <summary>Test</summary>
+## Test
 
-  ```sh
-  git clone https://github.com/m1ra9e/cli-commander.git cli-commander
-  cd cli-commander
-  mvn clean test
-  ```
-
-</details>
+```sh
+git clone https://github.com/m1ra9e/cli-commander.git cli-commander
+cd cli-commander
+mvn clean test
+```
 
 ## Changelog
 
 [Changelog information](CHANGELOG.md)
 
-### Short version description
+<details>
+  <summary>Short version description</summary>
 
-| version | description                          |
-| ------- | ------------------------------------ |
-| 1.0.0   | simple base logic of cli application |
+  | version | description                          |
+  | ------- | ------------------------------------ |
+  | 1.0.0   | simple base logic of cli application |
+
+</details>
 
 ## Plans
 
 - fix bugs
 - add new functions
+- refactoring
