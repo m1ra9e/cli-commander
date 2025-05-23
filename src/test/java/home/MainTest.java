@@ -30,32 +30,33 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-final class ArgsProcessorTest {
+final class MainTest {
 
     @ParameterizedTest(name = "[{0}] : {3}")
     @CsvSource(delimiter = ';', value = {
             // testName.....|.args...........................|.description
             "display        ; -d car,truck,motorcycle,car    ; Valid display operation",
             "display_unique ; --display-unique car,truck,car ; Valid display-unique operation",
+            "empty_arg      ; ' '                            ; Valid empti arguments operation",
+            "help           ; --help                         ; Valid help operation",
     })
     void validArgumentsTest(String testName, String args, String description)
             throws Exception {
-        assertDoesNotThrow(() -> ArgsProcessor.execute(args.split(" ")));
+        assertDoesNotThrow(() -> Main.executeApplication(args.split(" ")));
     }
 
     @ParameterizedTest(name = "[{0}] : {3}")
     @CsvSource(delimiter = ';', value = {
-            // testName.........|.args....................|.erroMsg....................................|.description
-            "empty_arg          ; ' '                     ; Enter arguments                            ; Throws an error if the arguments are empty",
-            "more_than_two_args ; -d truck -s car         ; Incorrect arguments count                  ; Throws an error if the number of arguments is greater than two",
-            "unknown_operation  ; --unknown-operation car ; Unsupported operation: --unknown-operation ; Throws an error if unsupported operation",
+            // testName...........|.args....................|.erroMsg.........................................................................................|.description
+            "more_than_one_params ; -d truck,car -u car     ; Incorrect parameters count                                                                      ; Throws an error if the number of parameters is greater than one",
+            "unknown_operation    ; --unknown-operation car ; passed main parameter '--unknown-operation' but no main parameter was defined in your arg class ; Throws an error if unsupported operation",
     })
     void incorrectArgumentsTest(String testName, String args, String erroMsg,
             String description) throws Exception {
         try {
-            ArgsProcessor.execute(args.split(" "));
-            fail("Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.");
-        } catch (IllegalArgumentException e) {
+            Main.executeApplication(args.split(" "));
+            fail("Expected java.lang.Exception to be thrown, but nothing was thrown.");
+        } catch (Exception e) {
             String actual = e.getMessage().strip();
             assertTrue(actual.endsWith(erroMsg), """
                     Expected and actual error message does not match:

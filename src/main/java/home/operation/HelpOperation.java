@@ -21,23 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.handler;
+package home.operation;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
+public final class HelpOperation implements IOperation {
 
-import org.junit.jupiter.api.Test;
+    private static final Logger LOG = LoggerFactory.getLogger(HelpOperation.class);
 
-final class DisplayHandlerTest {
-
-    @Test
-    void convertToListTest() {
-        List<String> expected = List.of("car", "truck", "motorcycle", "car");
-
-        var handler = new DisplayHandler();
-        List<String> actual = handler.convertToList("car, truck , motorcycle, car");
-
-        assertArrayEquals(expected.toArray(), actual.toArray());
+    @Override
+    public void run(Object values) {
+        LOG.info(values.toString());
     }
 }
