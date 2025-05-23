@@ -21,10 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.handler;
+package home.operation;
 
-public sealed interface IHandler
-        permits DisplayHandler, DisplayUniqueHandler, ScannerHandler {
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-    void run(String values);
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+final class DisplayOperationTest {
+
+    @Test
+    void convertToListTest() {
+        List<String> expected = List.of("car", "truck", "motorcycle", "car");
+
+        var handler = new DisplayOperation();
+        List<String> actual = handler.convertToList("car, truck , motorcycle, car");
+
+        assertArrayEquals(expected.toArray(), actual.toArray());
+    }
 }

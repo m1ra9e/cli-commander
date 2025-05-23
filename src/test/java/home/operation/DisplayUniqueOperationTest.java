@@ -21,27 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.handler;
+package home.operation;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-public final class DisplayHandler implements IHandler {
+import org.junit.jupiter.api.Test;
 
-    private static final Logger LOG = LoggerFactory.getLogger(DisplayHandler.class);
+final class DisplayUniqueOperationTest {
 
-    private static final String DELIMITER = ",";
+    @Test
+    void convertToSetTest() {
+        var expected = new LinkedHashSet<String>();
+        expected.add("car");
+        expected.add("truck");
+        expected.add("motorcycle");
 
-    @Override
-    public void run(String values) {
-        convertToList(values).forEach(LOG::info);
-    }
+        var handler = new DisplayUniqueOperation();
+        Set<String> actual = handler.convertToSet("car, truck , motorcycle, car");
 
-    List<String> convertToList(String values) {
-        return Arrays.stream(values.split(DELIMITER))
-                .map(String::strip).toList();
+        assertArrayEquals(expected.toArray(), actual.toArray());
     }
 }

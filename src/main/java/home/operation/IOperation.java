@@ -21,27 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.handler;
+package home.operation;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+public sealed interface IOperation
+        permits DisplayOperation, DisplayUniqueOperation, HelpOperation, InteractiveOperation {
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
-final class DisplayUniqueHandlerTest {
-
-    @Test
-    void convertToSetTest() {
-        var expected = new LinkedHashSet<String>();
-        expected.add("car");
-        expected.add("truck");
-        expected.add("motorcycle");
-
-        var handler = new DisplayUniqueHandler();
-        Set<String> actual = handler.convertToSet("car, truck , motorcycle, car");
-
-        assertArrayEquals(expected.toArray(), actual.toArray());
-    }
+    void run(Object values);
 }

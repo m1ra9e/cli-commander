@@ -21,38 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.operation;
 
-enum Operation {
+import java.util.Arrays;
+import java.util.List;
 
-    DISPLAY("-d", "--display"),
-    DISPLAY_UNIQUE("-u", "--display-unique"),
-    SCANNER("-s", "--scanner");
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private final String shortName;
-    private final String longName;
+public final class DisplayOperation implements IOperation {
 
-    Operation(String shortName, String longName) {
-        this.shortName = shortName;
-        this.longName = longName;
+    private static final Logger LOG = LoggerFactory.getLogger(DisplayOperation.class);
+
+    private static final String DELIMITER = ",";
+
+    @Override
+    public void run(Object values) {
+        convertToList(values.toString()).forEach(LOG::info);
     }
 
-    String getShortName() {
-        return shortName;
-    }
-
-    String getLongName() {
-        return longName;
-    }
-
-    static Operation getOperation(String operName) {
-        for (Operation oper : Operation.values()) {
-            String name = operName.strip();
-            if (name.equalsIgnoreCase(oper.getShortName())
-                    || name.equalsIgnoreCase(oper.getLongName())) {
-                return oper;
-            }
-        }
-        return null;
+    List<String> convertToList(String values) {
+        return Arrays.stream(values.split(DELIMITER))
+                .map(String::strip).toList();
     }
 }
