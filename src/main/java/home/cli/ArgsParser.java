@@ -21,50 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.handler;
-
-import java.util.Arrays;
-import java.util.Scanner;
+package home.cli;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ScannerHandler implements IHandler {
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ScannerHandler.class);
+public final class ArgsParser {
 
-    private static final String DELIMITER = ",";
+    private static final Logger LOG = LoggerFactory.getLogger(ArgsParser.class);
 
-    private static final String STOP = "STOP";
-    private static final String ENTER_MESSAGE = "Enter value (to exit, enter %s) : "
-            .formatted(STOP);
+    public static Parameters parse(String[] inputDataArray) {
+        var parameters = new Parameters();
 
-    private static final String USER_VALUES = "User values : %s";
+        JCommander jCommander = JCommander.newBuilder()
+                .programName("VEHICLE ACCOUNTING CLI")
+                .addObject(parameters)
+                .build();
 
-    @Override
-    public void run(String values) {
-        try (var scanner = new Scanner(System.in)) {
-            boolean isStopped = false;
-            String valueFromUser = null;
-            var sb = new StringBuilder();
+        String helpText = generateHelpText(jCommander);
 
-            if (values != null) {
-                Arrays.stream(values.split(DELIMITER))
-                        .map(String::strip)
-                        .forEach(v -> sb.append(v).append(DELIMITER));
+        try {
+            jCommander.parse(inputDataArray);
+            parameters.setParamsInfo(helpText);
+            if (inputDataArray.length == 0) {
+                parameters.setHelp(true);
             }
-
-            while (!isStopped) {
-                LOG.info(ENTER_MESSAGE);
-                valueFromUser = scanner.next().strip();
-                isStopped = STOP.equalsIgnoreCase(valueFromUser);
-                if (!isStopped) {
-                    sb.append(valueFromUser).append(DELIMITER);
-                    LOG.info(USER_VALUES.formatted(sb.toString()));
-                }
-            }
+        } catch (ParameterException e) {
+            LOG.error(e.getMessage() + helpText);
+            throw e;
         }
 
-        LOG.info(getClass().getSimpleName() + " stopped.");
+        return parameters;
+    }
+
+    private static String generateHelpText(JCommander jCommander) {
+        var sb = new StringBuilder();
+        jCommander.usage(sb);
+        return sb.toString();
+    }
+
+    private ArgsParser() {
     }
 }

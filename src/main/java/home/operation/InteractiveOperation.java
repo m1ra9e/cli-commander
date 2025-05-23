@@ -21,29 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.handler;
+package home.operation;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DisplayUniqueHandler implements IHandler {
+public final class InteractiveOperation implements IOperation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DisplayUniqueHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InteractiveOperation.class);
 
     private static final String DELIMITER = ",";
 
-    @Override
-    public void run(String values) {
-        convertToSet(values).forEach(v -> LOG.info(" - " + v));
-    }
+    private static final String STOP = "STOP";
+    private static final String ENTER_MESSAGE = "Enter value (to exit, enter %s) : "
+            .formatted(STOP);
 
-    Set<String> convertToSet(String values) {
-        return Arrays.stream(values.split(DELIMITER))
-                .map(String::strip).collect(Collectors.toCollection(LinkedHashSet::new));
+    private static final String USER_VALUES = "User values : %s";
+
+    @Override
+    public void run(Object values) {
+        try (var scanner = new Scanner(System.in)) {
+            boolean isStopped = false;
+            String valueFromUser = null;
+            var sb = new StringBuilder();
+
+            while (!isStopped) {
+                LOG.info(ENTER_MESSAGE);
+                valueFromUser = scanner.next().strip();
+                isStopped = STOP.equalsIgnoreCase(valueFromUser);
+                if (!isStopped) {
+                    sb.append(valueFromUser).append(DELIMITER);
+                    LOG.info(USER_VALUES.formatted(sb.toString()));
+                }
+            }
+        }
+
+        LOG.info(getClass().getSimpleName() + " stopped.");
     }
 }

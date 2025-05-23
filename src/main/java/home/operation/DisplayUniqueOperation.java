@@ -21,48 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.operation;
 
-import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import home.handler.DisplayHandler;
-import home.handler.DisplayUniqueHandler;
-import home.handler.IHandler;
-import home.handler.ScannerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-final class ArgsProcessor {
+public final class DisplayUniqueOperation implements IOperation {
 
-    static void execute(String[] args) throws SQLException {
-        checkArgs(args);
+    private static final Logger LOG = LoggerFactory.getLogger(DisplayUniqueOperation.class);
 
-        String operationName = args[0];
-        Operation operation = Operation.getOperation(operationName);
-        verifyOperation(operation, operationName);
+    private static final String DELIMITER = ",";
 
-        String values = args.length != 1 ? args[1] : null;
-
-        IHandler handler = switch (operation) {
-            case DISPLAY -> new DisplayHandler();
-            case DISPLAY_UNIQUE -> new DisplayUniqueHandler();
-            case SCANNER -> new ScannerHandler();
-        };
-        handler.run(values);
+    @Override
+    public void run(Object values) {
+        convertToSet(values.toString()).forEach(v -> LOG.info(" - " + v));
     }
 
-    private static void checkArgs(String[] args) {
-        if (args.length == 0) {
-            throw new IllegalArgumentException("Enter arguments");
-        } else if (args.length > 2) {
-            throw new IllegalArgumentException("Incorrect arguments count");
-        }
-    }
-
-    private static void verifyOperation(Operation operation, String operationName) {
-        if (operation == null) {
-            throw new IllegalArgumentException("Unsupported operation: " + operationName);
-        }
-    }
-
-    private ArgsProcessor() {
+    Set<String> convertToSet(String values) {
+        return Arrays.stream(values.split(DELIMITER))
+                .map(String::strip).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
