@@ -19,10 +19,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added getting application name and version from pom-file.
 
-### Changed
-
-- Extended scope for `github actions` (on_push_branches: `main` -> `*`)
-
 ## [2.1.0] - 2025-06-06
 
 ### Added
