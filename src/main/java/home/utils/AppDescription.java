@@ -21,46 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.utils;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.function.BiFunction;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public enum AppDescription {
 
-import home.cli.ArgsParser;
-import home.cli.Parameters;
-import home.utils.AppDescription;
+    INSTANCE;
 
-public final class Main {
+    private static final String DEFAULT_APP_NAME = "=VEHICLE_ACCOUNTING_CLI=";
+    private static final String DEFAULT_APP_VERSION = "UNKNOWN";
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private final String name;
+    private final String version;
 
-    public static void main(String[] args) {
-        try {
-            executeApplication(args);
-            LOG.info("Application {} v{} executed successfully.",
-                    AppDescription.getName(), AppDescription.getVersion());
-        } catch (Exception e) {
-            LOG.error("Application execution error", e);
-        }
+    private AppDescription() {
+        BiFunction<String, String, String> getSafeVal = (val, def) -> val != null ? val : def;
+        Package pkg = getClass().getPackage();
+        name = getSafeVal.apply(pkg.getImplementationTitle(), DEFAULT_APP_NAME);
+        version = getSafeVal.apply(pkg.getImplementationVersion(), DEFAULT_APP_VERSION);
     }
 
-    static void executeApplication(String[] args) throws Exception {
-        setUncaughtExceptionProcessing();
-
-        Parameters params = ArgsParser.parse(args);
-        ParamsProcessor.process(params);
+    public static String getName() {
+        return INSTANCE.name;
     }
 
-    private static void setUncaughtExceptionProcessing() {
-        var handler = new UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                LOG.error("(!) Application execution error", e);
-                System.exit(1);
-            }
-        };
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    public static String getVersion() {
+        return INSTANCE.version;
     }
 }
