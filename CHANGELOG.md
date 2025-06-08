@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+## [2.2.0] - XXXX-XX-XX
+
+### Added
+
+- Added getting application name and version from pom-file.
+
 ## [2.1.0] - 2025-06-06
 
 ### Added
