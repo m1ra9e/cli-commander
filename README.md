@@ -21,7 +21,7 @@ git clone https://github.com/m1ra9e/cli-commander.git cli-commander
 cd cli-commander
 mvn clean package -DskipTests
 cd target
-java -jar vehicle-cli-2.0.0.jar -d car,truck,motorcycle
+java -jar vehicle-cli-2.2.0.jar -d car,truck,motorcycle
 ```
 
 > these arguments are taken as an example only : `-d car,truck,motorcycle`
@@ -41,11 +41,12 @@ mvn clean test
 <details>
   <summary>Short version description</summary>
 
-  | version | description                                    |
-  | ------- | ---------------------------------------------- |
-  | 2.1.0   | added github actions                           |  
-  | 2.0.0   | added usage of jcommander library, refactoring |
-  | 1.0.0   | simple base logic of cli application           |
+  | version | description                                        |
+  | ------- | -------------------------------------------------- |
+  | 2.2.0   | get name/version from pom, extended github actions |
+  | 2.1.0   | added github actions                               |
+  | 2.0.0   | added usage of jcommander library, refactoring     |
+  | 1.0.0   | simple base logic of cli application               |
 
 </details>
 
