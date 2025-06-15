@@ -21,47 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.utils;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import home.cli.ArgsParser;
-import home.cli.Parameters;
-import home.utils.AppDescription;
-import home.utils.ExecutionTime;
+public final class ExecutionTime {
 
-public final class Main {
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionTime.class);
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    public static void measure(Consumer<String[]> method, String[] args) {
+        long startTimeNs = System.nanoTime();
+        method.accept(args);
+        long endTimeNs = System.nanoTime();
+        long executionTimeNs = endTimeNs - startTimeNs;
 
-    public static void main(String[] args) {
-        try {
-            ExecutionTime.measure(Main::executeApplication, args);
-            LOG.info("Application {} v{} executed successfully.",
-                    AppDescription.getName(), AppDescription.getVersion());
-        } catch (Exception e) {
-            LOG.error("Application execution error", e);
+        long executionTimeMs = executionTimeNs / 1_000_000;
+        if (executionTimeMs != 0) {
+            logExecutionTime(executionTimeMs, "ms");
+            return;
         }
+
+        logExecutionTime(executionTimeNs, "ns");
     }
 
-    static void executeApplication(String[] args) {
-        setUncaughtExceptionProcessing();
-
-        Parameters params = ArgsParser.parse(args);
-        ParamsProcessor.process(params);
+    private static void logExecutionTime(long executionTime, String unitOfMeasurement) {
+        LOG.info("Execution time, {}: {}", unitOfMeasurement, separateThousands(executionTime));
     }
 
-    private static void setUncaughtExceptionProcessing() {
-        var handler = new UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                LOG.error("(!) Application execution error", e);
-                System.exit(1);
-            }
-        };
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    private static String separateThousands(long number) {
+        return "%,d".formatted(number).replace(',', ' ');
+    }
+
+    private ExecutionTime() {
     }
 }
