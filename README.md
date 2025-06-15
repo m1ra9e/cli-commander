@@ -41,12 +41,12 @@ mvn clean test
 <details>
   <summary>Short version description</summary>
 
-  | version | description                                    |
-  | ------- | ---------------------------------------------- |
-  | 2.2.0   | get name/version from pom                      |
-  | 2.1.0   | added github actions                           |
-  | 2.0.0   | added usage of jcommander library, refactoring |
-  | 1.0.0   | simple base logic of cli application           |
+  | version | description                                       |
+  | ------- | ------------------------------------------------- |
+  | 2.2.0   | get name/version from pom, execution time logging |
+  | 2.1.0   | added github actions                              |
+  | 2.0.0   | added usage of jcommander library, refactoring    |
+  | 1.0.0   | simple base logic of cli application              |
 
 </details>
 
