@@ -29,20 +29,17 @@ import org.slf4j.LoggerFactory;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import home.utils.AppDescription;
+import home.utils.AppInfo;
 
 public final class ArgsParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArgsParser.class);
 
-    private static final String PROGRAM_NAME = "%s v%s".formatted(
-            AppDescription.getName(), AppDescription.getVersion());
-
     public static Parameters parse(String[] inputDataArray) {
         var parameters = new Parameters();
 
         JCommander jCommander = JCommander.newBuilder()
-                .programName(PROGRAM_NAME)
+                .programName(AppInfo.getNameAndVersion())
                 .addObject(parameters)
                 .build();
 
