@@ -21,11 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.model;
+package home.cli;
 
-public final class Car extends AbstractVehicle {
+import com.beust.jcommander.Parameter;
 
-    public Car() {
-        super(VehicleType.CAR);
+public final class Options {
+
+    @Parameter(names = { "-d", "--display" }, description = "Displaying input data")
+    private String dataForDisplay;
+
+    @Parameter(names = { "-u", "--display-unique" }, description = "Displaying unique input data")
+    private String dataForDisplayUnique;
+
+    @Parameter(names = { "-i", "--interactive" }, description = "Activate interactive mode")
+    private boolean isInteractiveMode;
+
+    @Parameter(names = { "-h", "--help" }, description = "Parameters information")
+    private boolean isHelp;
+
+    private String optionsInfo;
+
+    public String getDataForDisplay() {
+        return dataForDisplay;
+    }
+
+    public String getDataForDisplayUnique() {
+        return dataForDisplayUnique;
+    }
+
+    public boolean isInteractiveMode() {
+        return isInteractiveMode;
+    }
+
+    public boolean isHelp() {
+        return isHelp;
+    }
+
+    public void setHelp(boolean isHelp) {
+        this.isHelp = isHelp;
+    }
+
+    public String getOptionsInfo() {
+        return optionsInfo;
+    }
+
+    public void setOptionsInfo(String optionsInfo) {
+        this.optionsInfo = optionsInfo;
     }
 }

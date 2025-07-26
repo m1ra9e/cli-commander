@@ -35,28 +35,28 @@ public final class ArgsParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArgsParser.class);
 
-    public static Parameters parse(String[] inputDataArray) {
-        var parameters = new Parameters();
+    public static Options parse(String[] inputDataArray) {
+        var options = new Options();
 
         JCommander jCommander = JCommander.newBuilder()
                 .programName(AppInfo.getNameAndVersion())
-                .addObject(parameters)
+                .addObject(options)
                 .build();
 
         String helpText = generateHelpText(jCommander);
 
         try {
             jCommander.parse(inputDataArray);
-            parameters.setParamsInfo(helpText);
+            options.setOptionsInfo(helpText);
             if (inputDataArray.length == 0) {
-                parameters.setHelp(true);
+                options.setHelp(true);
             }
         } catch (ParameterException e) {
             LOG.error(e.getMessage() + helpText);
             throw e;
         }
 
-        return parameters;
+        return options;
     }
 
     private static String generateHelpText(JCommander jCommander) {

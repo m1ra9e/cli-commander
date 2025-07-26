@@ -56,6 +56,7 @@ public enum VehicleType {
                 return true;
             }
         }
+
         return false;
     }
 }

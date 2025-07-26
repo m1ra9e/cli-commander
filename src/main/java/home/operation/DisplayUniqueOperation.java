@@ -23,27 +23,23 @@
  *******************************************************************************/
 package home.operation;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import home.converter.SimpleConverter;
+import home.model.VehicleModel;
 
 public final class DisplayUniqueOperation implements IOperation {
 
     private static final Logger LOG = LoggerFactory.getLogger(DisplayUniqueOperation.class);
 
-    private static final String DELIMITER = ",";
-
     @Override
     public void run(Object values) {
-        convertToSet(values.toString()).forEach(v -> LOG.info(" - " + v));
-    }
-
-    Set<String> convertToSet(String values) {
-        return Arrays.stream(values.split(DELIMITER))
-                .map(String::strip).collect(Collectors.toCollection(LinkedHashSet::new));
+        String textOfManyObjs = values.toString();
+        var converter = new SimpleConverter();
+        var vehicles = new LinkedHashSet<VehicleModel>(converter.convertStringToObjs(textOfManyObjs));
+        vehicles.forEach(vehicle -> LOG.info(" - " + vehicle.toString()));
     }
 }

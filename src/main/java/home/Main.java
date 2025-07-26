@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import home.cli.ArgsParser;
-import home.cli.Parameters;
+import home.cli.Options;
 import home.utils.AppInfo;
 import home.utils.ExecutionTime;
 
@@ -49,8 +49,8 @@ public final class Main {
     static void executeApplication(String[] args) {
         setUncaughtExceptionProcessing();
 
-        Parameters params = ArgsParser.parse(args);
-        ParamsProcessor.process(params);
+        Options options = ArgsParser.parse(args);
+        OptionsProcessor.process(options);
     }
 
     private static void setUncaughtExceptionProcessing() {

@@ -25,15 +25,11 @@ package home.model;
 
 import java.util.Objects;
 
-public abstract sealed class AbstractVehicle permits Car, Truck, Motorcycle {
+public final class VehicleModel {
 
     private VehicleType type;
     private String color;
     private String number;
-
-    public AbstractVehicle(VehicleType type) {
-        this.type = type;
-    }
 
     public VehicleType getType() {
         return type;
@@ -69,11 +65,16 @@ public abstract sealed class AbstractVehicle permits Car, Truck, Motorcycle {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof AbstractVehicle other)) {
+        if (!(obj instanceof VehicleModel other)) {
             return false;
         }
         return type == other.type
                 && Objects.equals(color, other.color)
                 && Objects.equals(number, other.number);
+    }
+
+    @Override
+    public String toString() {
+        return "VehicleModel [type=%s, color=%s, number=%s]".formatted(type, color, number);
     }
 }
