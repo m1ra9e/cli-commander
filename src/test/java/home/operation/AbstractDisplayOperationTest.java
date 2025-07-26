@@ -23,10 +23,41 @@
  *******************************************************************************/
 package home.operation;
 
-final class DisplayOperationTest extends AbstractDisplayOperationTest {
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    @Override
-    protected IOperation getOperation() {
-        return new DisplayOperation();
+import org.junit.jupiter.api.Test;
+
+abstract sealed class AbstractDisplayOperationTest permits DisplayOperationTest, DisplayUniqueOperationTest {
+
+    @Test
+    void runTest() {
+        Object textOfManyObjs = "car_red_c234ek,"
+                + "TRUCK_white_t534kh,"
+                + "TRUCK_wHiTe_t534kh,"
+                + "moTORcycle_white-black_p879ds,"
+                + "cAr_red_c234ek";
+
+        assertDoesNotThrow(() -> getOperation().run(textOfManyObjs));
     }
+
+    @Test
+    void runWithWrongObjTypeTest() {
+        Object textOfManyObjs = "car_red_c234ek,"
+                + "truck_white_t534kh,"
+                + "bicycle_blue_y542po";
+
+        assertThrows(IllegalArgumentException.class,
+                () -> getOperation().run(textOfManyObjs));
+    }
+
+    @Test
+    void runWithUnexpectedValueCountTest() {
+        Object textOfManyObjs = "car_red_c234ek_some-other-param";
+
+        assertThrows(IllegalArgumentException.class,
+                () -> getOperation().run(textOfManyObjs));
+    }
+
+    protected abstract IOperation getOperation();
 }
