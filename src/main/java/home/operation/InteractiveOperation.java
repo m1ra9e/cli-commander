@@ -23,22 +23,28 @@
  *******************************************************************************/
 package home.operation;
 
+import java.util.List;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import home.converter.SimpleConverter;
+import home.model.VehicleModel;
+
 public final class InteractiveOperation implements IOperation {
 
     private static final Logger LOG = LoggerFactory.getLogger(InteractiveOperation.class);
 
-    private static final String DELIMITER = ",";
+    private static final String LS = System.lineSeparator();
 
     private static final String STOP = "STOP";
     private static final String ENTER_MESSAGE = "Enter value (to exit, enter %s) : "
             .formatted(STOP);
 
-    private static final String USER_VALUES = "User values : %s";
+    private static final String USER_VALUES = "User values :" + LS + "%s";
+
+    private final SimpleConverter simpleConverter = new SimpleConverter();
 
     @Override
     public void run(Object values) {
@@ -52,12 +58,17 @@ public final class InteractiveOperation implements IOperation {
                 valueFromUser = scanner.next().strip();
                 isStopped = STOP.equalsIgnoreCase(valueFromUser);
                 if (!isStopped) {
-                    sb.append(valueFromUser).append(DELIMITER);
-                    LOG.info(USER_VALUES.formatted(sb.toString()));
+                    convertAndLog(valueFromUser, sb);
                 }
             }
         }
 
         LOG.info(getClass().getSimpleName() + " stopped.");
+    }
+
+    private void convertAndLog(String textOfManyObjs, StringBuilder sb) {
+        List<VehicleModel> vehicles = simpleConverter.convertStringToObjs(textOfManyObjs);
+        vehicles.forEach(vehicle -> sb.append(vehicle).append(LS));
+        LOG.info(USER_VALUES.formatted(sb.toString()));
     }
 }

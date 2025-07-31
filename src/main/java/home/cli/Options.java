@@ -21,32 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.utils;
+package home.cli;
 
-import java.util.function.BiFunction;
+import com.beust.jcommander.Parameter;
 
-public enum AppDescription {
+public final class Options {
 
-    INSTANCE;
+    @Parameter(names = { "-d", "--display" }, description = "Displaying input data")
+    private String dataForDisplay;
 
-    private static final String DEFAULT_APP_NAME = "=VEHICLE_ACCOUNTING_CLI=";
-    private static final String DEFAULT_APP_VERSION = "UNKNOWN";
+    @Parameter(names = { "-u", "--display-unique" }, description = "Displaying unique input data")
+    private String dataForDisplayUnique;
 
-    private final String name;
-    private final String version;
+    @Parameter(names = { "-i", "--interactive" }, description = "Activate interactive mode")
+    private boolean isInteractiveMode;
 
-    private AppDescription() {
-        BiFunction<String, String, String> getSafeVal = (val, def) -> val != null ? val : def;
-        Package pkg = getClass().getPackage();
-        name = getSafeVal.apply(pkg.getImplementationTitle(), DEFAULT_APP_NAME);
-        version = getSafeVal.apply(pkg.getImplementationVersion(), DEFAULT_APP_VERSION);
+    @Parameter(names = { "-h", "--help" }, description = "Parameters information")
+    private boolean isHelp;
+
+    private String optionsInfo;
+
+    public String getDataForDisplay() {
+        return dataForDisplay;
     }
 
-    public static String getName() {
-        return INSTANCE.name;
+    public String getDataForDisplayUnique() {
+        return dataForDisplayUnique;
     }
 
-    public static String getVersion() {
-        return INSTANCE.version;
+    public boolean isInteractiveMode() {
+        return isInteractiveMode;
+    }
+
+    public boolean isHelp() {
+        return isHelp;
+    }
+
+    public void setHelp(boolean isHelp) {
+        this.isHelp = isHelp;
+    }
+
+    public String getOptionsInfo() {
+        return optionsInfo;
+    }
+
+    public void setOptionsInfo(String optionsInfo) {
+        this.optionsInfo = optionsInfo;
     }
 }

@@ -21,51 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.cli;
+package home.model;
 
-import com.beust.jcommander.Parameter;
+import java.util.Objects;
 
-public final class Parameters {
+public final class VehicleModel {
 
-    @Parameter(names = { "-d", "--display" }, description = "Displaying input data")
-    private String dataForDisplay;
+    private VehicleType type;
+    private String color;
+    private String number;
 
-    @Parameter(names = { "-u", "--display-unique" }, description = "Displaying unique input data")
-    private String dataForDisplayUnique;
-
-    @Parameter(names = { "-i", "--interactive" }, description = "Activate interactive mode")
-    private boolean isInteractiveMode;
-
-    @Parameter(names = { "-h", "--help" }, description = "Parameters information")
-    private boolean isHelp;
-
-    private String paramsInfo;
-
-    public String getDataForDisplay() {
-        return dataForDisplay;
+    public VehicleType getType() {
+        return type;
     }
 
-    public String getDataForDisplayUnique() {
-        return dataForDisplayUnique;
+    public void setType(VehicleType type) {
+        this.type = type;
     }
 
-    public boolean isInteractiveMode() {
-        return isInteractiveMode;
+    public String getColor() {
+        return color;
     }
 
-    public boolean isHelp() {
-        return isHelp;
+    public void setColor(String color) {
+        this.color = color;
     }
 
-    public void setHelp(boolean isHelp) {
-        this.isHelp = isHelp;
+    public String getNumber() {
+        return number;
     }
 
-    public String getParamsInfo() {
-        return paramsInfo;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
-    public void setParamsInfo(String paramsInfo) {
-        this.paramsInfo = paramsInfo;
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, color, number);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof VehicleModel other)) {
+            return false;
+        }
+        return type == other.type
+                && Objects.equals(color, other.color)
+                && Objects.equals(number, other.number);
+    }
+
+    @Override
+    public String toString() {
+        return "VehicleModel [type=%s, color=%s, number=%s]".formatted(type, color, number);
     }
 }

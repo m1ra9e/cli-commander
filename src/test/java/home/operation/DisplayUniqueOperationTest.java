@@ -23,25 +23,10 @@
  *******************************************************************************/
 package home.operation;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+final class DisplayUniqueOperationTest extends AbstractDisplayOperationTest {
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
-final class DisplayUniqueOperationTest {
-
-    @Test
-    void convertToSetTest() {
-        var expected = new LinkedHashSet<String>();
-        expected.add("car");
-        expected.add("truck");
-        expected.add("motorcycle");
-
-        var handler = new DisplayUniqueOperation();
-        Set<String> actual = handler.convertToSet("car, truck , motorcycle, car");
-
-        assertArrayEquals(expected.toArray(), actual.toArray());
+    @Override
+    protected IOperation getOperation() {
+        return new DisplayUniqueOperation();
     }
 }

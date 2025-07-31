@@ -21,44 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.utils;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.function.BiFunction;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public enum AppInfo {
 
-import home.cli.ArgsParser;
-import home.cli.Options;
-import home.utils.AppInfo;
-import home.utils.ExecutionTime;
+    INSTANCE;
 
-public final class Main {
+    private static final String DEFAULT_APP_NAME = "=VEHICLE_ACCOUNTING_CLI=";
+    private static final String DEFAULT_APP_VERSION = "UNKNOWN";
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final String NAME_AND_VERSION_TEMPLATE = "%s v%s";
 
-    public static void main(String[] args) {
-        try {
-            ExecutionTime.measure(Main::executeApplication, args);
-            LOG.info("Application {} executed successfully.", AppInfo.getNameAndVersion());
-        } catch (Exception e) {
-            LOG.error("Application execution error", e);
-        }
+    private final String nameAndVersion;
+
+    private AppInfo() {
+        BiFunction<String, String, String> getSafeVal = (val, def) -> val != null ? val : def;
+        Package pkg = getClass().getPackage();
+
+        String name = getSafeVal.apply(pkg.getImplementationTitle(), DEFAULT_APP_NAME);
+        String version = getSafeVal.apply(pkg.getImplementationVersion(), DEFAULT_APP_VERSION);
+
+        nameAndVersion = NAME_AND_VERSION_TEMPLATE.formatted(name, version);
     }
 
-    static void executeApplication(String[] args) {
-        setUncaughtExceptionProcessing();
-
-        Options options = ArgsParser.parse(args);
-        OptionsProcessor.process(options);
-    }
-
-    private static void setUncaughtExceptionProcessing() {
-        UncaughtExceptionHandler handler = (thread, throwable) -> {
-            LOG.error("(!) Application execution error in %s".formatted(thread.getName()), throwable);
-            System.exit(1);
-        };
-
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    public static String getNameAndVersion() {
+        return INSTANCE.nameAndVersion;
     }
 }
