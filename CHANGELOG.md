@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+## [2.2.0] - 2025-07-31
+
+### Added
+
+- Added getting application name and version from pom-file.
+- Added execution time logging.
+- Added model usage.
+
 ## [2.1.0] - 2025-06-06
 
 ### Added

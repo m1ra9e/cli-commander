@@ -21,44 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.model;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public final class VehicleModel {
 
-import home.cli.ArgsParser;
-import home.cli.Options;
-import home.utils.AppInfo;
-import home.utils.ExecutionTime;
+    private VehicleType type;
+    private String color;
+    private String number;
 
-public final class Main {
+    public VehicleType getType() {
+        return type;
+    }
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    public void setType(VehicleType type) {
+        this.type = type;
+    }
 
-    public static void main(String[] args) {
-        try {
-            ExecutionTime.measure(Main::executeApplication, args);
-            LOG.info("Application {} executed successfully.", AppInfo.getNameAndVersion());
-        } catch (Exception e) {
-            LOG.error("Application execution error", e);
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, color, number);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
+        if (!(obj instanceof VehicleModel other)) {
+            return false;
+        }
+        return type == other.type
+                && Objects.equals(color, other.color)
+                && Objects.equals(number, other.number);
     }
 
-    static void executeApplication(String[] args) {
-        setUncaughtExceptionProcessing();
-
-        Options options = ArgsParser.parse(args);
-        OptionsProcessor.process(options);
-    }
-
-    private static void setUncaughtExceptionProcessing() {
-        UncaughtExceptionHandler handler = (thread, throwable) -> {
-            LOG.error("(!) Application execution error in %s".formatted(thread.getName()), throwable);
-            System.exit(1);
-        };
-
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    @Override
+    public String toString() {
+        return "VehicleModel [type=%s, color=%s, number=%s]".formatted(type, color, number);
     }
 }

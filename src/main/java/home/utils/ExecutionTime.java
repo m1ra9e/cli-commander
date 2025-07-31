@@ -21,51 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.cli;
+package home.utils;
 
-import com.beust.jcommander.Parameter;
+import java.util.function.Consumer;
 
-public final class Parameters {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    @Parameter(names = { "-d", "--display" }, description = "Displaying input data")
-    private String dataForDisplay;
+public final class ExecutionTime {
 
-    @Parameter(names = { "-u", "--display-unique" }, description = "Displaying unique input data")
-    private String dataForDisplayUnique;
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionTime.class);
 
-    @Parameter(names = { "-i", "--interactive" }, description = "Activate interactive mode")
-    private boolean isInteractiveMode;
+    public static void measure(Consumer<String[]> method, String[] args) {
+        long startTimeNs = System.nanoTime();
+        method.accept(args);
+        long endTimeNs = System.nanoTime();
+        long executionTimeNs = endTimeNs - startTimeNs;
 
-    @Parameter(names = { "-h", "--help" }, description = "Parameters information")
-    private boolean isHelp;
+        long executionTimeMs = executionTimeNs / 1_000_000;
+        if (executionTimeMs != 0) {
+            logExecutionTime(executionTimeMs, "ms");
+            return;
+        }
 
-    private String paramsInfo;
-
-    public String getDataForDisplay() {
-        return dataForDisplay;
+        logExecutionTime(executionTimeNs, "ns");
     }
 
-    public String getDataForDisplayUnique() {
-        return dataForDisplayUnique;
+    private static void logExecutionTime(long executionTime, String unitOfMeasurement) {
+        LOG.info("Execution time, {}: {}", unitOfMeasurement, separateThousands(executionTime));
     }
 
-    public boolean isInteractiveMode() {
-        return isInteractiveMode;
+    private static String separateThousands(long number) {
+        return "%,d".formatted(number).replace(',', ' ');
     }
 
-    public boolean isHelp() {
-        return isHelp;
-    }
-
-    public void setHelp(boolean isHelp) {
-        this.isHelp = isHelp;
-    }
-
-    public String getParamsInfo() {
-        return paramsInfo;
-    }
-
-    public void setParamsInfo(String paramsInfo) {
-        this.paramsInfo = paramsInfo;
+    private ExecutionTime() {
     }
 }

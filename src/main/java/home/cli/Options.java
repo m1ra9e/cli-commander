@@ -21,44 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.cli;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import com.beust.jcommander.Parameter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public final class Options {
 
-import home.cli.ArgsParser;
-import home.cli.Options;
-import home.utils.AppInfo;
-import home.utils.ExecutionTime;
+    @Parameter(names = { "-d", "--display" }, description = "Displaying input data")
+    private String dataForDisplay;
 
-public final class Main {
+    @Parameter(names = { "-u", "--display-unique" }, description = "Displaying unique input data")
+    private String dataForDisplayUnique;
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    @Parameter(names = { "-i", "--interactive" }, description = "Activate interactive mode")
+    private boolean isInteractiveMode;
 
-    public static void main(String[] args) {
-        try {
-            ExecutionTime.measure(Main::executeApplication, args);
-            LOG.info("Application {} executed successfully.", AppInfo.getNameAndVersion());
-        } catch (Exception e) {
-            LOG.error("Application execution error", e);
-        }
+    @Parameter(names = { "-h", "--help" }, description = "Parameters information")
+    private boolean isHelp;
+
+    private String optionsInfo;
+
+    public String getDataForDisplay() {
+        return dataForDisplay;
     }
 
-    static void executeApplication(String[] args) {
-        setUncaughtExceptionProcessing();
-
-        Options options = ArgsParser.parse(args);
-        OptionsProcessor.process(options);
+    public String getDataForDisplayUnique() {
+        return dataForDisplayUnique;
     }
 
-    private static void setUncaughtExceptionProcessing() {
-        UncaughtExceptionHandler handler = (thread, throwable) -> {
-            LOG.error("(!) Application execution error in %s".formatted(thread.getName()), throwable);
-            System.exit(1);
-        };
+    public boolean isInteractiveMode() {
+        return isInteractiveMode;
+    }
 
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    public boolean isHelp() {
+        return isHelp;
+    }
+
+    public void setHelp(boolean isHelp) {
+        this.isHelp = isHelp;
+    }
+
+    public String getOptionsInfo() {
+        return optionsInfo;
+    }
+
+    public void setOptionsInfo(String optionsInfo) {
+        this.optionsInfo = optionsInfo;
     }
 }

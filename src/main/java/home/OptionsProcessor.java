@@ -29,45 +29,45 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import home.cli.Parameters;
+import home.cli.Options;
 import home.operation.DisplayOperation;
 import home.operation.DisplayUniqueOperation;
 import home.operation.HelpOperation;
 import home.operation.IOperation;
 import home.operation.InteractiveOperation;
 
-final class ParamsProcessor {
+final class OptionsProcessor {
 
     private enum OperationType {
         DISPLAY, DISPLAY_UNIQUE, HELP, INTERACTIVE_MODE;
     }
 
-    static void process(Parameters params) {
-        Entry<OperationType, Object> operationAndValue = checkAndGetOperationData(params);
+    static void process(Options options) {
+        Entry<OperationType, Object> operationAndValue = checkAndGetOperationData(options);
         OperationType operationType = operationAndValue.getKey();
         Object value = operationAndValue.getValue();
 
         IOperation operation = switch (operationType) {
-            case DISPLAY -> new DisplayOperation();
-            case DISPLAY_UNIQUE -> new DisplayUniqueOperation();
-            case HELP -> new HelpOperation();
+            case DISPLAY ->          new DisplayOperation();
+            case DISPLAY_UNIQUE ->   new DisplayUniqueOperation();
+            case HELP ->             new HelpOperation();
             case INTERACTIVE_MODE -> new InteractiveOperation();
         };
 
         operation.run(value);
     }
 
-    private static Entry<OperationType, Object> checkAndGetOperationData(Parameters params) {
+    private static Entry<OperationType, Object> checkAndGetOperationData(Options options) {
         var operationAndValue = new HashMap<OperationType, Object>();
 
-        addIfExists(OperationType.DISPLAY, params.getDataForDisplay(),
-                operationAndValue, () -> params.getDataForDisplay() != null);
-        addIfExists(OperationType.DISPLAY_UNIQUE, params.getDataForDisplayUnique(),
-                operationAndValue, () -> params.getDataForDisplayUnique() != null);
-        addIfExists(OperationType.INTERACTIVE_MODE, params.isInteractiveMode(),
-                operationAndValue, () -> params.isInteractiveMode());
-        addIfExists(OperationType.HELP, params.getParamsInfo(),
-                operationAndValue, () -> params.isHelp());
+        addIfExists(OperationType.DISPLAY, options.getDataForDisplay(),
+                operationAndValue, () -> options.getDataForDisplay() != null);
+        addIfExists(OperationType.DISPLAY_UNIQUE, options.getDataForDisplayUnique(),
+                operationAndValue, () -> options.getDataForDisplayUnique() != null);
+        addIfExists(OperationType.INTERACTIVE_MODE, options.isInteractiveMode(),
+                operationAndValue, () -> options.isInteractiveMode());
+        addIfExists(OperationType.HELP, options.getOptionsInfo(),
+                operationAndValue, () -> options.isHelp());
 
         checkOperationType(operationAndValue.keySet());
 
@@ -75,8 +75,8 @@ final class ParamsProcessor {
     }
 
     private static void addIfExists(OperationType operationType, Object value,
-            Map<OperationType, Object> operationAndValue, Supplier<Boolean> hasParam) {
-        if (hasParam.get()) {
+            Map<OperationType, Object> operationAndValue, Supplier<Boolean> hasOption) {
+        if (hasOption.get()) {
             operationAndValue.put(operationType, value);
         }
     }
@@ -87,6 +87,6 @@ final class ParamsProcessor {
         }
     }
 
-    private ParamsProcessor() {
+    private OptionsProcessor() {
     }
 }

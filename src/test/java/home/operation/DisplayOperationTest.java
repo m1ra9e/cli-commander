@@ -23,21 +23,10 @@
  *******************************************************************************/
 package home.operation;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+final class DisplayOperationTest extends AbstractDisplayOperationTest {
 
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
-final class DisplayOperationTest {
-
-    @Test
-    void convertToListTest() {
-        List<String> expected = List.of("car", "truck", "motorcycle", "car");
-
-        var handler = new DisplayOperation();
-        List<String> actual = handler.convertToList("car, truck , motorcycle, car");
-
-        assertArrayEquals(expected.toArray(), actual.toArray());
+    @Override
+    protected IOperation getOperation() {
+        return new DisplayOperation();
     }
 }

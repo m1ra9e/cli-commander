@@ -23,25 +23,23 @@
  *******************************************************************************/
 package home.operation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import home.converter.SimpleConverter;
+import home.model.VehicleModel;
+
 public final class DisplayOperation implements IOperation {
 
     private static final Logger LOG = LoggerFactory.getLogger(DisplayOperation.class);
 
-    private static final String DELIMITER = ",";
-
     @Override
     public void run(Object values) {
-        convertToList(values.toString()).forEach(LOG::info);
-    }
-
-    List<String> convertToList(String values) {
-        return Arrays.stream(values.split(DELIMITER))
-                .map(String::strip).toList();
+        String textOfManyObjs = values.toString();
+        var converter = new SimpleConverter();
+        List<VehicleModel> vehicles = converter.convertStringToObjs(textOfManyObjs);
+        vehicles.forEach(vehicle -> LOG.info(vehicle.toString()));
     }
 }
