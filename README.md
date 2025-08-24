@@ -52,6 +52,17 @@ Also available are tools for quick application testing:
 - for test run of the application, execute [run.bat](tools/run.bat) on Windows or [run.sh](tools/run.sh) on Linux;
 - for run tests, execute [test.bat](tools/test.bat) on Windows or [test.sh](tools/test.sh) on Linux.
 
+## For auto release
+
+```sh
+git tag -a v1.0.0 version_commit_hash -m "tag description message"
+git tag
+git show v1.0.0
+git push origin v1.0.0
+```
+
+> this argument are taken as an example only : `v1.0.0`
+
 ## Changelog
 
 [Changelog information](CHANGELOG.md)
