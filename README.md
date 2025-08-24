@@ -21,7 +21,21 @@ git clone https://github.com/m1ra9e/cli-commander.git cli-commander
 cd cli-commander
 mvn clean package -DskipTests
 cd target
-java -jar vehicle-cli-2.2.0.jar -d car_red_d904df,truck_white_e765wer,motorcycle_black_x430cvb
+java -jar vehicle-cli-2.3.0.jar -d car_red_d904df,truck_white_e765wer,motorcycle_black_x430cvb
+```
+
+For run [released version](https://github.com/m1ra9e/cli-commander/releases) unpack zip-archive and use 
+
+- vehicle-cli.bat on Windows 
+
+```bat
+vehicle-cli.bat -d car_red_d904df,truck_white_e765wer,motorcycle_black_x430cvb
+```
+
+- vehicle-cli.sh on Linux.
+
+```sh
+vehicle-cli.sh -d car_red_d904df,truck_white_e765wer,motorcycle_black_x430cvb
 ```
 
 > these arguments are taken as an example only : `-d car_red_d904df,truck_white_e765wer,motorcycle_black_x430cvb`
@@ -34,6 +48,10 @@ cd cli-commander
 mvn clean test
 ```
 
+Also available are tools for quick application testing:
+- for test run of the application, execute [run.bat](tools/run.bat) on Windows or [run.sh](tools/run.sh) on Linux;
+- for run tests, execute [test.bat](tools/test.bat) on Windows or [test.sh](tools/test.sh) on Linux.
+
 ## Changelog
 
 [Changelog information](CHANGELOG.md)
@@ -41,12 +59,13 @@ mvn clean test
 <details>
   <summary>Short version description</summary>
 
-  | version | description                                                              |
-  | ------- | ------------------------------------------------------------------------ |
-  | 2.2.0   | get name and version from pom, execution time logging, added model usage |
-  | 2.1.0   | added github actions                                                     |
-  | 2.0.0   | added usage of jcommander library, refactoring                           |
-  | 1.0.0   | simple base logic of cli application                                     |
+  | version | description                                                                  |
+  | ------- | ---------------------------------------------------------------------------- |
+  | 2.3.0   | added scripts tools/for_run, improved build, auto release via github actions |
+  | 2.2.0   | get name and version from pom, execution time logging, added model usage     |
+  | 2.1.0   | added github actions (checks compilation, runs tests, checks build)          |
+  | 2.0.0   | added usage of jcommander library, refactoring                               |
+  | 1.0.0   | simple base logic of cli application                                         |
 
 </details>
 
