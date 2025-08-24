@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+## [2.3.0] - 2025-08-24
+
+### Added
+
+- Added tools-scripts (bat/sh).
+- Added scripts (bat/sh) for run released jar-file.
+- Added auto release via github actions (on push version tag).
+
+### Changed
+
+- Improved build: added copying files to the special directory and archiving it for release.
+
 ## [2.2.0] - 2025-07-31
 
 ### Added
@@ -25,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Added github actions.
+- Added github actions (checking compilation, runing tests, checking build).
 
 ## [2.0.0] - 2025-05-23
 

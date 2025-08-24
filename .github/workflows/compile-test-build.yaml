@@ -1,4 +1,4 @@
-name: Build
+name: compile_test_build
 
 on:
   pull_request:

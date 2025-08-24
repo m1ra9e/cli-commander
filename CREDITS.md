@@ -4,7 +4,7 @@
 
 ### Retired Developers (in alphabetical order):
 
-- 
+- Elmir Shamsutdinov ([baslo2](https://github.com/baslo2)) - Programmer (0.0.1 - 2.0.0)
 
 ### Thanks to:
 
