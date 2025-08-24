@@ -61,7 +61,7 @@ git show v1.0.0
 git push origin v1.0.0
 ```
 
-> this argument are taken as an example only : `v1.0.0`
+> this argument is taken only as an example : `v1.0.0`
 
 ## Changelog
 
