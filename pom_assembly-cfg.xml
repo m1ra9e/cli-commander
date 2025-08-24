@@ -30,6 +30,10 @@
             <outputDirectory>${projDirName}</outputDirectory>
         </file>
         <file>
+            <source>bin/vehicle-cli.sh</source>
+            <outputDirectory>${projDirName}</outputDirectory>
+        </file>
+        <file>
             <source>README.md</source>
             <outputDirectory>${projDirName}</outputDirectory>
         </file>
