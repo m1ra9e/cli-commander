@@ -44,7 +44,7 @@ public final class ArgsParser {
                 .build();
 
         String optionsDescriptions = generateOptionsDescriptions(jCommander);
-        setAdditionalInfo(options, inputDataArray, optionsDescriptions);
+        setAdditionalValues(options, inputDataArray, optionsDescriptions);
 
         try {
             jCommander.parse(inputDataArray);
@@ -62,7 +62,7 @@ public final class ArgsParser {
         return sb.toString();
     }
 
-    private static void setAdditionalInfo(Options options, String[] inputDataArray, String optionsDescriptions) {
+    private static void setAdditionalValues(Options options, String[] inputDataArray, String optionsDescriptions) {
         if (inputDataArray.length == 0) {
             options.setHelp(true);
         }
