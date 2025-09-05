@@ -43,26 +43,32 @@ public final class ArgsParser {
                 .addObject(options)
                 .build();
 
-        String helpText = generateHelpText(jCommander);
+        String optionsDescriptions = generateOptionsDescriptions(jCommander);
+        setAdditionalInfo(options, inputDataArray, optionsDescriptions);
 
         try {
             jCommander.parse(inputDataArray);
-            options.setOptionsInfo(helpText);
-            if (inputDataArray.length == 0) {
-                options.setHelp(true);
-            }
         } catch (ParameterException e) {
-            LOG.error(e.getMessage() + helpText);
+            LOG.error(e.getMessage());
             throw e;
         }
 
         return options;
     }
 
-    private static String generateHelpText(JCommander jCommander) {
+    private static String generateOptionsDescriptions(JCommander jCommander) {
         var sb = new StringBuilder();
         jCommander.usage(sb);
         return sb.toString();
+    }
+
+    private static void setAdditionalInfo(Options options, String[] inputDataArray, String optionsDescriptions) {
+        if (inputDataArray.length == 0) {
+            options.setHelp(true);
+        }
+
+        options.setOptionsDescriptions(optionsDescriptions);
+        options.setVersionInfo(AppInfo.getVersion());
     }
 
     private ArgsParser() {

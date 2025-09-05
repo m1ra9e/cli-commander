@@ -33,13 +33,16 @@ public final class Options {
     @Parameter(names = { "-u", "--display-unique" }, description = "Displaying unique input data")
     private String dataForDisplayUnique;
 
-    @Parameter(names = { "-i", "--interactive" }, description = "Activate interactive mode")
-    private boolean isInteractiveMode;
-
     @Parameter(names = { "-h", "--help" }, description = "Parameters information")
     private boolean isHelp;
 
-    private String optionsInfo;
+    @Parameter(names = { "-i", "--interactive" }, description = "Activate interactive mode")
+    private boolean isInteractiveMode;
+
+    @Parameter(names = { "-v", "--version" }, description = "Displaying application version")
+    private boolean isVersion;
+
+    private final AdditionalValues additionalValues = new AdditionalValues();
 
     public String getDataForDisplay() {
         return dataForDisplay;
@@ -49,23 +52,41 @@ public final class Options {
         return dataForDisplayUnique;
     }
 
-    public boolean isInteractiveMode() {
-        return isInteractiveMode;
-    }
-
     public boolean isHelp() {
         return isHelp;
     }
 
-    public void setHelp(boolean isHelp) {
+    void setHelp(boolean isHelp) {
         this.isHelp = isHelp;
     }
 
-    public String getOptionsInfo() {
-        return optionsInfo;
+    public boolean isInteractiveMode() {
+        return isInteractiveMode;
     }
 
-    public void setOptionsInfo(String optionsInfo) {
-        this.optionsInfo = optionsInfo;
+    public boolean isVersion() {
+        return isVersion;
+    }
+
+    public String getVersionInfo() {
+        return additionalValues.versionInfo;
+    }
+
+    void setVersionInfo(String versionInfo) {
+        additionalValues.versionInfo = versionInfo;
+    }
+
+    public String getOptionsDescriptions() {
+        return additionalValues.optionsDescriptions;
+    }
+
+    void setOptionsDescriptions(String optionsDescriptions) {
+        additionalValues.optionsDescriptions = optionsDescriptions;
+    }
+
+    private static final class AdditionalValues {
+
+        private String optionsDescriptions;
+        private String versionInfo;
     }
 }

@@ -23,8 +23,7 @@
  *******************************************************************************/
 package home.operation;
 
-public sealed interface IOperation
-        permits DisplayOperation, DisplayUniqueOperation, HelpOperation, InteractiveOperation {
+public interface IOperation {
 
     void run(Object values);
 }

@@ -25,21 +25,19 @@ package home.operation;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import home.converter.SimpleConverter;
 import home.model.VehicleModel;
 
-public final class DisplayOperation implements IOperation {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DisplayOperation.class);
+public final class DisplayOperation extends AbstractDisplayOperation {
 
     @Override
-    public void run(Object values) {
-        String textOfManyObjs = values.toString();
-        var converter = new SimpleConverter();
-        List<VehicleModel> vehicles = converter.convertStringToObjs(textOfManyObjs);
-        vehicles.forEach(vehicle -> LOG.info(vehicle.toString()));
+    protected String getFormattedMsg(Object unformattedObjMsg) {
+        String textOfManyObjs = unformattedObjMsg.toString();
+        List<VehicleModel> vehicles = new SimpleConverter().convertStringToObjs(textOfManyObjs);
+
+        var sb = new StringBuilder();
+        vehicles.forEach(vehicle -> sb.append(vehicle.toString()).append(LS));
+
+        return sb.toString();
     }
 }
