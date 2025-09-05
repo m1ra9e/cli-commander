@@ -48,7 +48,7 @@ public final class ExecutionTime {
     }
 
     private static void logExecutionTime(long executionTime, String unitOfMeasurement) {
-        LOG.info("Execution time, {}: {}", unitOfMeasurement, separateThousands(executionTime));
+        LOG.info("\nExecution time, {}: {}", unitOfMeasurement, separateThousands(executionTime));
     }
 
     private static String separateThousands(long number) {

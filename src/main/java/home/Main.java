@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import home.cli.ArgsParser;
 import home.cli.Options;
+import home.processor.OptionsProcessor;
 import home.utils.AppInfo;
 import home.utils.ExecutionTime;
 
@@ -40,9 +41,8 @@ public final class Main {
     public static void main(String[] args) {
         try {
             ExecutionTime.measure(Main::executeApplication, args);
-            LOG.info("Application {} executed successfully.", AppInfo.getNameAndVersion());
         } catch (Exception e) {
-            LOG.error("Application execution error", e);
+            LOG.error("\nApplication {} execution error : {}", AppInfo.getNameAndVersion(), e);
         }
     }
 
@@ -55,7 +55,7 @@ public final class Main {
 
     private static void setUncaughtExceptionProcessing() {
         UncaughtExceptionHandler handler = (thread, throwable) -> {
-            LOG.error("(!) Application execution error in %s".formatted(thread.getName()), throwable);
+            LOG.error("\n(!) Application execution error in %s".formatted(thread.getName()), throwable);
             System.exit(1);
         };
 

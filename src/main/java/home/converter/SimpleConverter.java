@@ -35,6 +35,10 @@ public final class SimpleConverter {
     // regex for similar expressions: n3-4Um-8b--E43r
     private static final Pattern VALUE_PATTERN = Pattern.compile("^[a-zA-Z0-9-]+$");
 
+    // value must contain 3 parts : type, color, number
+    // (in format "type_color_number")
+    private static final int VALUE_PARTS_COUNT = 3;
+
     private static final String OBJECTS_DELIMITER = ",";
     private static final String VALUES_DELIMITER = "_";
 
@@ -64,11 +68,14 @@ public final class SimpleConverter {
      * @return data object
      */
     private VehicleModel convertStringToObj(String textOfOneObj) {
-        String[] values = textOfOneObj.split(VALUES_DELIMITER);
+        String[] valueParts = textOfOneObj.split(VALUES_DELIMITER);
+
+        checkValuePartsCount(valueParts, textOfOneObj);
+
         var vehicle = new VehicleModel();
 
-        for (int value_idx = 0; value_idx < values.length; value_idx++) {
-            String value = values[value_idx];
+        for (int value_idx = 0; value_idx < valueParts.length; value_idx++) {
+            String value = valueParts[value_idx];
             checkParamValue(value);
             switch (value_idx) {
                 case TYPE_VALUE_IDX ->   vehicle.setType(VehicleType.getVehicleType(value));
@@ -82,9 +89,17 @@ public final class SimpleConverter {
         return vehicle;
     }
 
+    private void checkValuePartsCount(String[] valueParts, String textOfOneObj) {
+        if (VALUE_PARTS_COUNT != valueParts.length) {
+            throw new IllegalArgumentException(
+                    "The value must contain %d parts : type, color, number (in format 'type_color_number') : %s"
+                            .formatted(VALUE_PARTS_COUNT, textOfOneObj));
+        }
+    }
+
     private void checkParamValue(String value) {
         if (!VALUE_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("The value has an invalid format : " + value);
+            throw new IllegalArgumentException("The value has an invalid symbols : " + value);
         }
     }
 }

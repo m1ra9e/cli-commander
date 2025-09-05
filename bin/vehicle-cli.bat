@@ -1,6 +1,6 @@
-rem runs vehicle-cli-*.jar
-
 @echo off
+
+rem runs vehicle-cli-*.jar
 
 chcp 1251
 

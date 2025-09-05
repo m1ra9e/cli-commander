@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.processor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,17 +32,17 @@ import java.util.function.Supplier;
 import home.cli.Options;
 import home.operation.DisplayOperation;
 import home.operation.DisplayUniqueOperation;
-import home.operation.HelpOperation;
+import home.operation.DisplayStringOperation;
 import home.operation.IOperation;
 import home.operation.InteractiveOperation;
 
-final class OptionsProcessor {
+public final class OptionsProcessor {
 
     private enum OperationType {
-        DISPLAY, DISPLAY_UNIQUE, HELP, INTERACTIVE_MODE;
+        DISPLAY, DISPLAY_UNIQUE, HELP, INTERACTIVE_MODE, VERSION;
     }
 
-    static void process(Options options) {
+    public static void process(Options options) {
         Entry<OperationType, Object> operationAndValue = checkAndGetOperationData(options);
         OperationType operationType = operationAndValue.getKey();
         Object value = operationAndValue.getValue();
@@ -50,38 +50,40 @@ final class OptionsProcessor {
         IOperation operation = switch (operationType) {
             case DISPLAY ->          new DisplayOperation();
             case DISPLAY_UNIQUE ->   new DisplayUniqueOperation();
-            case HELP ->             new HelpOperation();
             case INTERACTIVE_MODE -> new InteractiveOperation();
+            case HELP, VERSION ->    new DisplayStringOperation();
         };
 
         operation.run(value);
     }
 
     private static Entry<OperationType, Object> checkAndGetOperationData(Options options) {
-        var operationAndValue = new HashMap<OperationType, Object>();
+        var operationAndValueMap = new HashMap<OperationType, Object>();
 
-        addIfExists(OperationType.DISPLAY, options.getDataForDisplay(),
-                operationAndValue, () -> options.getDataForDisplay() != null);
-        addIfExists(OperationType.DISPLAY_UNIQUE, options.getDataForDisplayUnique(),
-                operationAndValue, () -> options.getDataForDisplayUnique() != null);
-        addIfExists(OperationType.INTERACTIVE_MODE, options.isInteractiveMode(),
-                operationAndValue, () -> options.isInteractiveMode());
-        addIfExists(OperationType.HELP, options.getOptionsInfo(),
-                operationAndValue, () -> options.isHelp());
+        putToMapIfExists(OperationType.DISPLAY, options.getDataForDisplay(),
+                operationAndValueMap, () -> options.getDataForDisplay() != null);
+        putToMapIfExists(OperationType.DISPLAY_UNIQUE, options.getDataForDisplayUnique(),
+                operationAndValueMap, () -> options.getDataForDisplayUnique() != null);
+        putToMapIfExists(OperationType.HELP, options.getOptionsDescriptions(),
+                operationAndValueMap, () -> options.isHelp());
+        putToMapIfExists(OperationType.INTERACTIVE_MODE, options.isInteractiveMode(),
+                operationAndValueMap, () -> options.isInteractiveMode());
+        putToMapIfExists(OperationType.VERSION, options.getVersionInfo(),
+                operationAndValueMap, () -> options.isVersion());
 
-        checkOperationType(operationAndValue.keySet());
+        checkOperations(operationAndValueMap.keySet());
 
-        return operationAndValue.entrySet().iterator().next();
+        return operationAndValueMap.entrySet().iterator().next();
     }
 
-    private static void addIfExists(OperationType operationType, Object value,
+    private static void putToMapIfExists(OperationType operationType, Object value,
             Map<OperationType, Object> operationAndValue, Supplier<Boolean> hasOption) {
         if (hasOption.get()) {
             operationAndValue.put(operationType, value);
         }
     }
 
-    private static void checkOperationType(Set<OperationType> operationTypes) {
+    private static void checkOperations(Set<OperationType> operationTypes) {
         if (operationTypes.size() != 1) {
             throw new IllegalArgumentException("Incorrect parameters count");
         }

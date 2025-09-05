@@ -23,15 +23,10 @@
  *******************************************************************************/
 package home.operation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public final class HelpOperation implements IOperation {
-
-    private static final Logger LOG = LoggerFactory.getLogger(HelpOperation.class);
+public final class DisplayStringOperation extends AbstractDisplayOperation {
 
     @Override
-    public void run(Object values) {
-        LOG.info(values.toString());
+    protected String getFormattedMsg(Object unformattedObjMsg) {
+        return unformattedObjMsg.toString();
     }
 }
