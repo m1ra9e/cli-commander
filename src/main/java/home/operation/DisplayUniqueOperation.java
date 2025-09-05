@@ -25,21 +25,21 @@ package home.operation;
 
 import java.util.LinkedHashSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import home.converter.SimpleConverter;
 import home.model.VehicleModel;
 
-public final class DisplayUniqueOperation implements IOperation {
+public final class DisplayUniqueOperation extends AbstractDisplayOperation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DisplayUniqueOperation.class);
+    private static final String DASH = " - ";
 
     @Override
-    public void run(Object values) {
-        String textOfManyObjs = values.toString();
-        var converter = new SimpleConverter();
-        var vehicles = new LinkedHashSet<VehicleModel>(converter.convertStringToObjs(textOfManyObjs));
-        vehicles.forEach(vehicle -> LOG.info(" - " + vehicle.toString()));
+    protected String getFormattedMsg(Object unformattedObjMsg) {
+        String textOfManyObjs = unformattedObjMsg.toString();
+        var vehicles = new LinkedHashSet<VehicleModel>(new SimpleConverter().convertStringToObjs(textOfManyObjs));
+
+        var sb = new StringBuilder();
+        vehicles.forEach(vehicle -> sb.append(DASH).append(vehicle.toString()).append(LS));
+
+        return sb.toString();
     }
 }

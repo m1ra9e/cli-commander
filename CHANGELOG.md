@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
- 
+
 ## [Unreleased]
 
 ### Added
@@ -12,6 +12,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+ 
+## [3.0.0] - XXXX-XX-XX
+
+### Added
+
+- Added parameter ("-v", "--version").
+
+### Changed
+
+- Refactored.
+- Removed unnecessary output in bat-script for run released jar-file.
+
+### Fixed
+
+- Fixed checking of parameter values.
 
 ## [2.3.0] - 2025-08-24
 
