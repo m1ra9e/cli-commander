@@ -21,47 +21,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.config;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import home.model.ConnectionModel;
+import home.model.ModeType;
 
-import home.cli.ArgsParser;
-import home.cli.Options;
-import home.processor.OptionsProcessor;
-import home.utils.AppInfo;
-import home.utils.ExecutionTime;
+public final class Config {
 
-public final class Main {
+    private static Config config;
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
-
-    public static void main(String[] args) {
-        try {
-            ExecutionTime.measure(Main::executeApplication, args);
-        } catch (Exception e) {
-            LOG.error("\nApplication {} execution error : {}", AppInfo.getNameAndVersion(), e);
-            System.exit(1);
-        }
+    private Config() {
     }
 
-    static void executeApplication(String[] args) {
-        setUncaughtExceptionProcessing();
-
-        Options options = ArgsParser.parse(args);
-
-        // Config.readConfigs("config file(s) path");
-        OptionsProcessor.process(options);
+    public static void readConfigs(String configFiles) throws IOException {
+        config = new Config();
+        ConfigParser.readConfigs(configFiles, config);
     }
 
-    private static void setUncaughtExceptionProcessing() {
-        UncaughtExceptionHandler handler = (thread, throwable) -> {
-            LOG.error("\n(!) Application execution error in %s".formatted(thread.getName()), throwable);
-            System.exit(1);
-        };
+    public static Config getCurrent() {
+        return config;
+    }
 
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    private ModeType mode;
+
+    private final Map<String, ConnectionModel> connectionModels = new HashMap<>();
+
+    void setMode(ModeType mode) {
+        this.mode = mode;
+    }
+
+    public ModeType getMode() {
+        return mode;
+    }
+
+    void addConnection(ConnectionModel connectionModel) {
+        connectionModels.put(connectionModel.getName(), connectionModel);
+    }
+
+    public ConnectionModel getConnection(String name) {
+        return connectionModels.get(name);
+    }
+
+    public Map<String, ConnectionModel> getConnections() {
+        return Collections.unmodifiableMap(connectionModels);
     }
 }

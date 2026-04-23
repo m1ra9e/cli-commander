@@ -39,6 +39,16 @@ public enum VehicleType {
         return type;
     }
 
+    public boolean in(VehicleType ... vehicleTypes) {
+        for (VehicleType vehicleType : vehicleTypes) {
+            if (this == vehicleType) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static VehicleType getVehicleType(String type) {
         String typeFormatted = type.strip();
         for (VehicleType vehicleType : VehicleType.values()) {
@@ -48,15 +58,5 @@ public enum VehicleType {
         }
 
         throw new IllegalArgumentException("Wrong vehicle type received : " + type);
-    }
-
-    public boolean in(VehicleType... vehicleTypes) {
-        for (var vehicleType : vehicleTypes) {
-            if (this == vehicleType) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

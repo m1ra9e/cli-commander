@@ -21,47 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.config;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+final class ConfigConst {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+    // settings
+    static final String SETTINGS = "settings";
+    static final String MODE     = "mode";
 
-import home.cli.ArgsParser;
-import home.cli.Options;
-import home.processor.OptionsProcessor;
-import home.utils.AppInfo;
-import home.utils.ExecutionTime;
+    // connections
+    static final String CONNECTIONS = "connections";
+    static final String NAME        = "name";
+    static final String HOST        = "host";
+    static final String PORT        = "port";
+    static final String DATABASE    = "database";
+    static final String USER        = "user";
+    static final String PASS        = "pass";
 
-public final class Main {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
-
-    public static void main(String[] args) {
-        try {
-            ExecutionTime.measure(Main::executeApplication, args);
-        } catch (Exception e) {
-            LOG.error("\nApplication {} execution error : {}", AppInfo.getNameAndVersion(), e);
-            System.exit(1);
-        }
-    }
-
-    static void executeApplication(String[] args) {
-        setUncaughtExceptionProcessing();
-
-        Options options = ArgsParser.parse(args);
-
-        // Config.readConfigs("config file(s) path");
-        OptionsProcessor.process(options);
-    }
-
-    private static void setUncaughtExceptionProcessing() {
-        UncaughtExceptionHandler handler = (thread, throwable) -> {
-            LOG.error("\n(!) Application execution error in %s".formatted(thread.getName()), throwable);
-            System.exit(1);
-        };
-
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+    private ConfigConst() {
     }
 }

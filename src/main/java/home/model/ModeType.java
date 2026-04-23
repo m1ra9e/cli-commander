@@ -21,47 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home;
+package home.model;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+public enum ModeType {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+    MIRROR("mirror");
 
-import home.cli.ArgsParser;
-import home.cli.Options;
-import home.processor.OptionsProcessor;
-import home.utils.AppInfo;
-import home.utils.ExecutionTime;
+    private final String typeName;
 
-public final class Main {
+    private ModeType(String type) {
+        this.typeName = type;
+    }
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    public String getTypeName() {
+        return typeName;
+    }
 
-    public static void main(String[] args) {
-        try {
-            ExecutionTime.measure(Main::executeApplication, args);
-        } catch (Exception e) {
-            LOG.error("\nApplication {} execution error : {}", AppInfo.getNameAndVersion(), e);
-            System.exit(1);
+    public static ModeType getModeType(String typeName) {
+        String typeNameFormatted = typeName.strip();
+        for (ModeType modeType : ModeType.values()) {
+            if (typeNameFormatted.equalsIgnoreCase(modeType.getTypeName())) {
+                return modeType;
+            }
         }
-    }
 
-    static void executeApplication(String[] args) {
-        setUncaughtExceptionProcessing();
-
-        Options options = ArgsParser.parse(args);
-
-        // Config.readConfigs("config file(s) path");
-        OptionsProcessor.process(options);
-    }
-
-    private static void setUncaughtExceptionProcessing() {
-        UncaughtExceptionHandler handler = (thread, throwable) -> {
-            LOG.error("\n(!) Application execution error in %s".formatted(thread.getName()), throwable);
-            System.exit(1);
-        };
-
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+        throw new IllegalArgumentException("Wrong mode type received : " + typeName);
     }
 }
