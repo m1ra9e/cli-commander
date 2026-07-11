@@ -25,7 +25,8 @@ package home.model;
 
 public enum ModeType {
 
-    MIRROR("mirror");
+    MIRROR("mirror"),
+    SINGLE("single");
 
     private final String typeName;
 

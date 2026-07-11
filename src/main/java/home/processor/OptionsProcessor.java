@@ -23,6 +23,8 @@
  *******************************************************************************/
 package home.processor;
 
+import static home.processor.OperationType.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,17 +32,17 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import home.cli.Options;
+import home.operation.DeleteOperation;
 import home.operation.DisplayOperation;
-import home.operation.DisplayUniqueOperation;
 import home.operation.DisplayStringOperation;
+import home.operation.DisplayUniqueOperation;
 import home.operation.IOperation;
+import home.operation.InsertOperation;
 import home.operation.InteractiveOperation;
+import home.operation.SelectOperation;
+import home.operation.UpdateOperation;
 
 public final class OptionsProcessor {
-
-    private enum OperationType {
-        DISPLAY, DISPLAY_UNIQUE, HELP, INTERACTIVE_MODE, VERSION;
-    }
 
     public static void process(Options options) {
         Entry<OperationType, Object> operationAndValue = checkAndGetOperationData(options);
@@ -48,10 +50,14 @@ public final class OptionsProcessor {
         Object value = operationAndValue.getValue();
 
         IOperation operation = switch (operationType) {
-            case DISPLAY ->          new DisplayOperation();
-            case DISPLAY_UNIQUE ->   new DisplayUniqueOperation();
+            case DELETE           -> new DeleteOperation();
+            case DISPLAY          -> new DisplayOperation();
+            case DISPLAY_UNIQUE   -> new DisplayUniqueOperation();
+            case INSERT           -> new InsertOperation();
             case INTERACTIVE_MODE -> new InteractiveOperation();
-            case HELP, VERSION ->    new DisplayStringOperation();
+            case SELECT           -> new SelectOperation();
+            case UPDATE           -> new UpdateOperation();
+            case HELP, VERSION    -> new DisplayStringOperation();
         };
 
         operation.run(value);
@@ -60,15 +66,23 @@ public final class OptionsProcessor {
     private static Entry<OperationType, Object> checkAndGetOperationData(Options options) {
         var operationAndValueMap = new HashMap<OperationType, Object>();
 
-        putToMapIfExists(OperationType.DISPLAY, options.getDataForDisplay(),
+        putToMapIfExists(DELETE, options.getDataForDeleteFromDb(),
+                operationAndValueMap, () -> options.getDataForDeleteFromDb() != null);
+        putToMapIfExists(DISPLAY, options.getDataForDisplay(),
                 operationAndValueMap, () -> options.getDataForDisplay() != null);
-        putToMapIfExists(OperationType.DISPLAY_UNIQUE, options.getDataForDisplayUnique(),
+        putToMapIfExists(DISPLAY_UNIQUE, options.getDataForDisplayUnique(),
                 operationAndValueMap, () -> options.getDataForDisplayUnique() != null);
-        putToMapIfExists(OperationType.HELP, options.getOptionsDescriptions(),
+        putToMapIfExists(HELP, options.getOptionsDescriptions(),
                 operationAndValueMap, () -> options.isHelp());
-        putToMapIfExists(OperationType.INTERACTIVE_MODE, options.isInteractiveMode(),
+        putToMapIfExists(INSERT, options.getDataForInsertToDb(),
+                operationAndValueMap, () -> options.getDataForInsertToDb() != null);
+        putToMapIfExists(INTERACTIVE_MODE, options.isInteractiveMode(),
                 operationAndValueMap, () -> options.isInteractiveMode());
-        putToMapIfExists(OperationType.VERSION, options.getVersionInfo(),
+        putToMapIfExists(SELECT, options.getSoughtValuesForSelectFromDb(),
+                operationAndValueMap, () -> options.getSoughtValuesForSelectFromDb() != null);
+        putToMapIfExists(UPDATE, options.getDataForUpdateInDb(),
+                operationAndValueMap, () -> options.getDataForUpdateInDb() != null);
+        putToMapIfExists(VERSION, options.getVersionInfo(),
                 operationAndValueMap, () -> options.isVersion());
 
         checkOperations(operationAndValueMap.keySet());

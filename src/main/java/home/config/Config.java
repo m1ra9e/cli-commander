@@ -24,6 +24,7 @@
 package home.config;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,5 +70,19 @@ public final class Config {
 
     public Map<String, ConnectionModel> getConnections() {
         return Collections.unmodifiableMap(connectionModels);
+    }
+
+    public Collection<ConnectionModel> getConnectionsForCurrentMode() {
+        return getConnectionsForMode(mode);
+    }
+
+    public Collection<ConnectionModel> getConnectionsForMode(ModeType modeType) {
+        Collection<ConnectionModel> connections = getConnections().values();
+
+        return switch (modeType) {
+            case MIRROR -> connections;
+            case SINGLE -> Collections.singletonList(connections.iterator().next());
+            default -> throw new IllegalArgumentException("Unexpected value: " + mode);
+        };
     }
 }

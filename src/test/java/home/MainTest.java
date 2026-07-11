@@ -33,13 +33,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 final class MainTest {
 
     @ParameterizedTest(name = "[{0}] : {3}")
-    @CsvSource(delimiter = ';', value = {
+    @CsvSource(delimiter = '|', value = {
             // testName.....|.args..............................................................................|.description
-            "display        ; -d car_red_c234ek,TRUCK_wHiTe_t534kh,moTORcycle_white-black_p879ds,car_red_c234ek ; Valid display operation",
-            "display_unique ; --display-unique car_red_c234ek,TRUCK_wHiTe_t534kh,car_red_c234ek                 ; Valid display-unique operation",
-            "empty_arg      ; ' '                                                                               ; Valid empty arguments operation",
-            "help           ; --help                                                                            ; Valid help operation",
-            "version        ; --version                                                                         ; Valid version operation",
+            "display        | -d car_red_c234ek,TRUCK_wHiTe_t534kh,moTORcycle_white-black_p879ds,car_red_c234ek | Valid display operation",
+            "display_unique | --display-unique car_red_c234ek,TRUCK_wHiTe_t534kh,car_red_c234ek                 | Valid display-unique operation",
+            "empty_arg      | ' '                                                                               | Valid empty arguments operation",
+            "help           | --help                                                                            | Valid help operation",
+            "version        | --version                                                                         | Valid version operation",
     })
     void validArgumentsTest(String testName, String args, String description)
             throws Exception {
@@ -47,13 +47,13 @@ final class MainTest {
     }
 
     @ParameterizedTest(name = "[{0}] : {3}")
-    @CsvSource(delimiter = ';', value = {
+    @CsvSource(delimiter = '|', value = {
             // testName.............|.args....................................|.erroMsg.........................................................................................|.description
-            "more_than_one_params   ; -d car_red_c234ek,TRUCK_wHiTe_t534kh -v ; Incorrect parameters count                                                                      ; Throws an error if the number of parameters is greater than one",
-            "incorrect_type_value   ; -d car_red_c234ek,train_grey_2341       ; Wrong vehicle type received : train                                                             ; Throws an error if the value has incorrect type",
-            "incorrect_value_format ; -d car,moto,truck                       ; The value must contain 3 parts : type, color, number (in format 'type_color_number') : car      ; Throws an error if the value format is incorrect",
-            "incorrect_value_symbol ; -d car_red_c234ek!                      ; The value has an invalid symbols : c234ek!                                                      ; Throws an error if the value contains incorrect symbol",
-            "unknown_operation      ; --unknown-operation car                 ; passed main parameter '--unknown-operation' but no main parameter was defined in your arg class ; Throws an error if unsupported operation",
+            "more_than_one_params   | -d car_red_c234ek,TRUCK_wHiTe_t534kh -v | Incorrect parameters count                                                                      | Throws an error if the number of parameters is greater than one",
+            "incorrect_type_value   | -d car_red_c234ek,train_grey_2341       | Wrong vehicle type received : train                                                             | Throws an error if the value has incorrect type",
+            "incorrect_value_format | -d car,moto,truck                       | The value must contain 3 parts : type, color, number (in format 'type_color_number') : car      | Throws an error if the value format is incorrect",
+            "incorrect_value_symbol | -d car_red_c234ek!                      | The value has an invalid symbols : c234ek!                                                      | Throws an error if the value contains incorrect symbol",
+            "unknown_operation      | --unknown-operation car                 | passed main parameter '--unknown-operation' but no main parameter was defined in your arg class | Throws an error if unsupported operation",
     })
     void incorrectArgumentsTest(String testName, String args, String erroMsg,
             String description) throws Exception {

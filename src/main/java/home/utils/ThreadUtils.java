@@ -21,25 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.operation;
+package home.utils;
 
-import java.util.LinkedHashSet;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.ThreadFactory;
 
-import home.converter.SimpleConverter;
-import home.model.VehicleModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public final class DisplayUniqueOperation extends AbstractDisplayOperation {
+public final class ThreadUtils {
 
-    private static final String DASH = " - ";
+    private static final Logger LOG = LoggerFactory.getLogger(ThreadUtils.class);
 
-    @Override
-    protected String getFormattedMsg(Object unformattedObjMsg) {
-        String textOfManyObjs = unformattedObjMsg.toString();
-        var vehicles = new LinkedHashSet<VehicleModel>(SimpleConverter.convertToDataObjs(textOfManyObjs));
+    public static ThreadFactory getPlatformDaemonThreadFactory(String threadName) {
+        return Thread.ofPlatform()
+                .daemon()
+                .name(threadName, 1)
+                .factory();
+    }
 
-        var sb = new StringBuilder();
-        vehicles.forEach(vehicle -> sb.append(DASH).append(vehicle.toString()).append(LS));
+    public static ThreadFactory getVirtualThreadFactory(String threadName) {
+        UncaughtExceptionHandler uncaughtExceptionHandler = (t, e) -> LOG
+                .error("Thread '{}' threw exception: {}", t.getName(), e.getMessage());
 
-        return sb.toString();
+        return Thread.ofVirtual()
+                .name(threadName, 1)
+                .uncaughtExceptionHandler(uncaughtExceptionHandler)
+                .factory();
+    }
+
+    private ThreadUtils() {
     }
 }

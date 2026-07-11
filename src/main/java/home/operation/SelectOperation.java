@@ -23,23 +23,31 @@
  *******************************************************************************/
 package home.operation;
 
-import java.util.LinkedHashSet;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import home.converter.SimpleConverter;
-import home.model.VehicleModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public final class DisplayUniqueOperation extends AbstractDisplayOperation {
+import home.db.Dao;
 
-    private static final String DASH = " - ";
+public final class SelectOperation implements IOperation {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SelectOperation.class);
 
     @Override
-    protected String getFormattedMsg(Object unformattedObjMsg) {
-        String textOfManyObjs = unformattedObjMsg.toString();
-        var vehicles = new LinkedHashSet<VehicleModel>(SimpleConverter.convertToDataObjs(textOfManyObjs));
+    public void run(Object values) {
+        String soughtValuesQuery = values.toString().strip();
+        Set<String> soughtValues = (soughtValuesQuery.isBlank())
+                ? Collections.emptySet()
+                : Arrays.stream(soughtValuesQuery.split(","))
+                        .map(String::strip)
+                        .filter(s -> !s.isBlank())
+                        .collect(Collectors.toUnmodifiableSet());
 
-        var sb = new StringBuilder();
-        vehicles.forEach(vehicle -> sb.append(DASH).append(vehicle.toString()).append(LS));
-
-        return sb.toString();
+        Dao.getInstance().select(soughtValues);
+        LOG.info("Data successfully selected from database");
     }
 }
