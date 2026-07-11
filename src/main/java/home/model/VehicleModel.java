@@ -75,6 +75,6 @@ public final class VehicleModel {
 
     @Override
     public String toString() {
-        return "VehicleModel [type=%s, color=%s, number=%s]".formatted(type, color, number);
+        return "vehicle [type=%s, color=%s, number=%s]".formatted(type, color, number);
     }
 }

@@ -46,6 +46,21 @@ public final class SimpleConverter {
     private static final int COLOR_VALUE_IDX = 1;
     private static final int NUMBER_VALUE_IDX = 2;
 
+    private SimpleConverter() {
+    }
+
+    private static class SingletonHolder {
+        private static final SimpleConverter INSTANCE = new SimpleConverter();
+    }
+
+    public static SimpleConverter getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    public static List<VehicleModel> convertToDataObjs(String textOfManyObjs) {
+        return getInstance().convertStringToObjs(textOfManyObjs);
+    }
+
     /**
      * Converts simple string (in format "type_color_number,type_color_number,...")
      * to list of data objects
@@ -54,7 +69,7 @@ public final class SimpleConverter {
      *                       format "type_color_number,type_color_number,..."
      * @return list of data objects
      */
-    public List<VehicleModel> convertStringToObjs(String textOfManyObjs) {
+    private List<VehicleModel> convertStringToObjs(String textOfManyObjs) {
         return Arrays.stream(textOfManyObjs.split(OBJECTS_DELIMITER))
                 .map(textOfOneObj -> convertStringToObj(textOfOneObj.strip()))
                 .toList();
@@ -93,7 +108,7 @@ public final class SimpleConverter {
         if (VALUE_PARTS_COUNT != valueParts.length) {
             throw new IllegalArgumentException(
                     "The value must contain %d parts : type, color, number (in format 'type_color_number') : %s"
-                            .formatted(VALUE_PARTS_COUNT, textOfOneObj));
+                    .formatted(VALUE_PARTS_COUNT, textOfOneObj));
         }
     }
 

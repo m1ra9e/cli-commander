@@ -22,6 +22,8 @@
 
 # Temp files
 
-*.txt
 *.doc
 *.docx
+*.txt
+# allow tracking 'unsupported_extension.txt' for test ConfigTest.unsupportedConfigFileExtensionTest
+!/src/test/resources/home/config/unsupported_extension.txt
