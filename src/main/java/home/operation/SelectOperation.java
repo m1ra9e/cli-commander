@@ -39,15 +39,15 @@ public final class SelectOperation implements IOperation {
 
     @Override
     public void run(Object values) {
-        String soughtValuesQuery = values.toString().strip();
-        Set<String> soughtValues = (soughtValuesQuery.isBlank())
+        String searchValuesQuery = values.toString().strip();
+        Set<String> searchValues = (searchValuesQuery.isBlank())
                 ? Collections.emptySet()
-                : Arrays.stream(soughtValuesQuery.split(","))
+                : Arrays.stream(searchValuesQuery.split(","))
                         .map(String::strip)
                         .filter(s -> !s.isBlank())
                         .collect(Collectors.toUnmodifiableSet());
 
-        Dao.getInstance().select(soughtValues);
+        Dao.getInstance().select(searchValues);
         LOG.info("Data successfully selected from database");
     }
 }
