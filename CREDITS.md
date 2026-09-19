@@ -9,4 +9,5 @@
 ### Thanks to:
 
 - Elmir Shamsutdinov ([baslo2](https://github.com/baslo2)) - For suggesting ideas
+- Mansur Galiev ([AXEPOH](https://github.com/AXEPOH)) - For suggesting ideas
 - Bug Reporters - For all bug reports

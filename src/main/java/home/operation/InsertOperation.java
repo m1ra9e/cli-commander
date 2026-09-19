@@ -23,23 +23,24 @@
  *******************************************************************************/
 package home.operation;
 
-import java.util.LinkedHashSet;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import home.converter.SimpleConverter;
+import home.db.Dao;
 import home.model.VehicleModel;
 
-public final class DisplayUniqueOperation extends AbstractDisplayOperation {
+public final class InsertOperation implements IOperation {
 
-    private static final String DASH = " - ";
+    private static final Logger LOG = LoggerFactory.getLogger(InsertOperation.class);
 
     @Override
-    protected String getFormattedMsg(Object unformattedObjMsg) {
-        String textOfManyObjs = unformattedObjMsg.toString();
-        var vehicles = new LinkedHashSet<VehicleModel>(SimpleConverter.convertToDataObjs(textOfManyObjs));
-
-        var sb = new StringBuilder();
-        vehicles.forEach(vehicle -> sb.append(DASH).append(vehicle.toString()).append(LS));
-
-        return sb.toString();
+    public void run(Object values) {
+        String textOfManyObjs = values.toString();
+        List<VehicleModel> vehicles = SimpleConverter.convertToDataObjs(textOfManyObjs);
+        Dao.getInstance().insert(vehicles);
+        LOG.info("Data successfully inserted to database");
     }
 }

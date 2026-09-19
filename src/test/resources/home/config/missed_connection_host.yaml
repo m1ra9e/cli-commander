@@ -1,0 +1,10 @@
+settings:
+  mode : mirror
+
+connections:
+  -
+    name : first1
+    # Missed required param: 'host'
+    database : dbname1
+    user : username1
+    pass : password1

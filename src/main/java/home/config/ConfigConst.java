@@ -21,25 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.operation;
+package home.config;
 
-import java.util.LinkedHashSet;
+final class ConfigConst {
 
-import home.converter.SimpleConverter;
-import home.model.VehicleModel;
+    // settings
+    static final String SETTINGS = "settings";
+    static final String MODE     = "mode";
 
-public final class DisplayUniqueOperation extends AbstractDisplayOperation {
+    // connections
+    static final String CONNECTIONS = "connections";
+    static final String NAME        = "name";
+    static final String HOST        = "host";
+    static final String PORT        = "port";
+    static final String DATABASE    = "database";
+    static final String USER        = "user";
+    static final String PASS        = "pass";
 
-    private static final String DASH = " - ";
-
-    @Override
-    protected String getFormattedMsg(Object unformattedObjMsg) {
-        String textOfManyObjs = unformattedObjMsg.toString();
-        var vehicles = new LinkedHashSet<VehicleModel>(SimpleConverter.convertToDataObjs(textOfManyObjs));
-
-        var sb = new StringBuilder();
-        vehicles.forEach(vehicle -> sb.append(DASH).append(vehicle.toString()).append(LS));
-
-        return sb.toString();
+    private ConfigConst() {
     }
 }
