@@ -61,11 +61,18 @@ public final class Dao {
             VALUES (?, ?, ?)
             """;
 
-    private static final String UPDATE = "";
+    private static final String UPDATE = """
+            UPDATE public.t_vehicle
+            SET
+              c_type = ?,
+              c_color = ?
+            WHERE c_number = ?
+            """;
 
     private static final String DELETE = """
             DELETE FROM public.t_vehicle
-            WHERE c_type = ?
+            WHERE
+              c_type = ?
               AND c_color = ?
               AND c_number = ?
             """;
@@ -99,7 +106,7 @@ public final class Dao {
 
     public void insert(List<VehicleModel> dataObjs) {
         Collection<ConnectionModel> connections = Config.getCurrent().getConnectionsForCurrentMode();
-        ThreadFactory factory = ThreadUtils.getVirtualThreadFactory("-> db write operation");
+        ThreadFactory factory = ThreadUtils.getVirtualThreadFactory("-> db insert operation");
 
         boolean isBatch = dataObjs.size() >= MIN_BATCH_SIZE;
 
@@ -153,7 +160,7 @@ public final class Dao {
                 conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throwDatabaseError("Error writing to database", e);
+            throwDatabaseError("Error inserting to database", e);
         }
     }
 
@@ -176,12 +183,91 @@ public final class Dao {
                 pstmt.execute();
             }
         } catch (SQLException e) {
-            throwDatabaseError("Error writing to database", e);
+            throwDatabaseError("Error inserting to database", e);
         }
     }
 
     public void update(List<VehicleModel> dataObjs) {
-        // TODO доделать update, затем select
+        Collection<ConnectionModel> connections = Config.getCurrent().getConnectionsForCurrentMode();
+        ThreadFactory factory = ThreadUtils.getVirtualThreadFactory("-> db update operation");
+
+        boolean isBatch = dataObjs.size() >= MIN_BATCH_SIZE;
+
+        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(factory)) {
+            for (ConnectionModel connection : connections) {
+                executor.submit(() -> {
+                    if (isBatch) {
+                        updateBatch(dataObjs, connection);
+                    } else {
+                        updateOneByOne(dataObjs, connection);
+                    }
+                });
+            }
+        }
+    }
+
+    private void updateBatch(List<VehicleModel> dataObjs, ConnectionModel connModel) {
+        try (Connection conn = Connector.getConnection(connModel)) {
+            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            conn.setAutoCommit(false);
+
+            int lastCommitedIdx = 0;
+
+            try (PreparedStatement pstmt = conn.prepareStatement(UPDATE)) {
+                int operationsCount = 0;
+                for (int i = 0; i < dataObjs.size(); i++) {
+                    VehicleModel dataObj = dataObjs.get(i);
+
+                    pstmt.clearParameters();
+                    fillStmtByDataFromObj(pstmt, dataObj);
+                    pstmt.addBatch();
+                    operationsCount++;
+
+                    // Execute every BATCH_SIZE items.
+                    if (operationsCount % MAX_BATCH_SIZE == 0 || operationsCount == dataObjs.size()) {
+                        checkBatchExecution(pstmt.executeBatch());
+                        conn.commit();
+
+                        lastCommitedIdx++;
+                    }
+                }
+            } catch (SQLException e) {
+                checkConnectionState(e);
+                rollbackAndLog(conn, e);
+
+                List<VehicleModel> remainingData = dataObjs.subList(lastCommitedIdx, dataObjs.size());
+                LOG.warn("Batch failed at index {}. The remaining items {} will be processed sequentially.",
+                        lastCommitedIdx, remainingData.size());
+                updateOneByOne(remainingData, conn);
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throwDatabaseError("Error udpating of database", e);
+        }
+    }
+
+    private void updateOneByOne(List<VehicleModel> dataObjs, Connection conn)
+            throws SQLException {
+        conn.setAutoCommit(true);
+        try (PreparedStatement pstmt = conn.prepareStatement(UPDATE)) {
+            for (VehicleModel dataObj : dataObjs) {
+                fillStmtByDataFromObj(pstmt, dataObj);
+                pstmt.execute();
+            }
+        }
+    }
+
+    private void updateOneByOne(List<VehicleModel> dataObjs, ConnectionModel connModel) {
+        try (Connection conn = Connector.getConnection(connModel);
+                PreparedStatement pstmt = conn.prepareStatement(UPDATE)) {
+            for (VehicleModel dataObj : dataObjs) {
+                fillStmtByDataFromObj(pstmt, dataObj);
+                pstmt.execute();
+            }
+        } catch (SQLException e) {
+            throwDatabaseError("Error updating of database", e);
+        }
     }
 
     public void delete(List<VehicleModel> dataObjs) {
