@@ -55,12 +55,16 @@ public final class Dao {
 
     private static final String SELECT = "";
 
+    // The order of columns is important: it must be the same for
+    // INSERT, UPDATE and DELETE operations.
     private static final String INSERT = """
             INSERT INTO public.t_vehicle
             (c_type, c_color, c_number)
             VALUES (?, ?, ?)
             """;
 
+    // The order of columns is important: it must be the same for
+    // INSERT, UPDATE and DELETE operations.
     private static final String UPDATE = """
             UPDATE public.t_vehicle
             SET
@@ -69,6 +73,8 @@ public final class Dao {
             WHERE c_number = ?
             """;
 
+    // The order of columns is important: it must be the same for
+    // INSERT, UPDATE and DELETE operations.
     private static final String DELETE = """
             DELETE FROM public.t_vehicle
             WHERE
@@ -105,262 +111,114 @@ public final class Dao {
     }
 
     public void insert(List<VehicleModel> dataObjs) {
-        Collection<ConnectionModel> connections = Config.getCurrent().getConnectionsForCurrentMode();
-        ThreadFactory factory = ThreadUtils.getVirtualThreadFactory("-> db insert operation");
-
-        boolean isBatch = dataObjs.size() >= MIN_BATCH_SIZE;
-
-        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(factory)) {
-            for (ConnectionModel connection : connections) {
-                executor.submit(() -> {
-                    if (isBatch) {
-                        insertBatch(dataObjs, connection);
-                    } else {
-                        insertOneByOne(dataObjs, connection);
-                    }
-                });
-            }
-        }
-    }
-
-    private void insertBatch(List<VehicleModel> dataObjs, ConnectionModel connModel) {
-        try (Connection conn = Connector.getConnection(connModel)) {
-            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            conn.setAutoCommit(false);
-
-            int lastCommitedIdx = 0;
-
-            try (PreparedStatement pstmt = conn.prepareStatement(INSERT)) {
-                int operationsCount = 0;
-                for (int i = 0; i < dataObjs.size(); i++) {
-                    VehicleModel dataObj = dataObjs.get(i);
-
-                    pstmt.clearParameters();
-                    fillStmtByDataFromObj(pstmt, dataObj);
-                    pstmt.addBatch();
-                    operationsCount++;
-
-                    // Execute every BATCH_SIZE items.
-                    if (operationsCount % MAX_BATCH_SIZE == 0 || operationsCount == dataObjs.size()) {
-                        checkBatchExecution(pstmt.executeBatch());
-                        conn.commit();
-
-                        lastCommitedIdx++;
-                    }
-                }
-            } catch (SQLException e) {
-                checkConnectionState(e);
-                rollbackAndLog(conn, e);
-
-                List<VehicleModel> remainingData = dataObjs.subList(lastCommitedIdx, dataObjs.size());
-                LOG.warn("Batch failed at index {}. The remaining items {} will be processed sequentially.",
-                        lastCommitedIdx, remainingData.size());
-                insertOneByOne(remainingData, conn);
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            throwDatabaseError("Error inserting to database", e);
-        }
-    }
-
-    private void insertOneByOne(List<VehicleModel> dataObjs, Connection conn)
-            throws SQLException {
-        conn.setAutoCommit(true);
-        try (PreparedStatement pstmt = conn.prepareStatement(INSERT)) {
-            for (VehicleModel dataObj : dataObjs) {
-                fillStmtByDataFromObj(pstmt, dataObj);
-                pstmt.execute();
-            }
-        }
-    }
-
-    private void insertOneByOne(List<VehicleModel> dataObjs, ConnectionModel connModel) {
-        try (Connection conn = Connector.getConnection(connModel);
-                PreparedStatement pstmt = conn.prepareStatement(INSERT)) {
-            for (VehicleModel dataObj : dataObjs) {
-                fillStmtByDataFromObj(pstmt, dataObj);
-                pstmt.execute();
-            }
-        } catch (SQLException e) {
-            throwDatabaseError("Error inserting to database", e);
-        }
+        modify(dataObjs, INSERT, "-> db insert operation",
+                "Error inserting to database");
     }
 
     public void update(List<VehicleModel> dataObjs) {
-        Collection<ConnectionModel> connections = Config.getCurrent().getConnectionsForCurrentMode();
-        ThreadFactory factory = ThreadUtils.getVirtualThreadFactory("-> db update operation");
-
-        boolean isBatch = dataObjs.size() >= MIN_BATCH_SIZE;
-
-        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(factory)) {
-            for (ConnectionModel connection : connections) {
-                executor.submit(() -> {
-                    if (isBatch) {
-                        updateBatch(dataObjs, connection);
-                    } else {
-                        updateOneByOne(dataObjs, connection);
-                    }
-                });
-            }
-        }
-    }
-
-    private void updateBatch(List<VehicleModel> dataObjs, ConnectionModel connModel) {
-        try (Connection conn = Connector.getConnection(connModel)) {
-            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            conn.setAutoCommit(false);
-
-            int lastCommitedIdx = 0;
-
-            try (PreparedStatement pstmt = conn.prepareStatement(UPDATE)) {
-                int operationsCount = 0;
-                for (int i = 0; i < dataObjs.size(); i++) {
-                    VehicleModel dataObj = dataObjs.get(i);
-
-                    pstmt.clearParameters();
-                    fillStmtByDataFromObj(pstmt, dataObj);
-                    pstmt.addBatch();
-                    operationsCount++;
-
-                    // Execute every BATCH_SIZE items.
-                    if (operationsCount % MAX_BATCH_SIZE == 0 || operationsCount == dataObjs.size()) {
-                        checkBatchExecution(pstmt.executeBatch());
-                        conn.commit();
-
-                        lastCommitedIdx++;
-                    }
-                }
-            } catch (SQLException e) {
-                checkConnectionState(e);
-                rollbackAndLog(conn, e);
-
-                List<VehicleModel> remainingData = dataObjs.subList(lastCommitedIdx, dataObjs.size());
-                LOG.warn("Batch failed at index {}. The remaining items {} will be processed sequentially.",
-                        lastCommitedIdx, remainingData.size());
-                updateOneByOne(remainingData, conn);
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            throwDatabaseError("Error udpating of database", e);
-        }
-    }
-
-    private void updateOneByOne(List<VehicleModel> dataObjs, Connection conn)
-            throws SQLException {
-        conn.setAutoCommit(true);
-        try (PreparedStatement pstmt = conn.prepareStatement(UPDATE)) {
-            for (VehicleModel dataObj : dataObjs) {
-                fillStmtByDataFromObj(pstmt, dataObj);
-                pstmt.execute();
-            }
-        }
-    }
-
-    private void updateOneByOne(List<VehicleModel> dataObjs, ConnectionModel connModel) {
-        try (Connection conn = Connector.getConnection(connModel);
-                PreparedStatement pstmt = conn.prepareStatement(UPDATE)) {
-            for (VehicleModel dataObj : dataObjs) {
-                fillStmtByDataFromObj(pstmt, dataObj);
-                pstmt.execute();
-            }
-        } catch (SQLException e) {
-            throwDatabaseError("Error updating of database", e);
-        }
+        modify(dataObjs, UPDATE, "-> db update operation",
+                "Error udpating of database");
     }
 
     public void delete(List<VehicleModel> dataObjs) {
-        Collection<ConnectionModel> connections = Config.getCurrent().getConnectionsForCurrentMode();
-        ThreadFactory factory = ThreadUtils.getVirtualThreadFactory("-> db delte operation");
-
-        boolean isBatch = dataObjs.size() >= MIN_BATCH_SIZE;
-
-        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(factory)) {
-            for (ConnectionModel connection : connections) {
-                executor.submit(() -> {
-                    if (isBatch) {
-                        deleteBatch(dataObjs, connection);
-                    } else {
-                        deleteOneByOne(dataObjs, connection);
-                    }
-                });
-            }
-        }
+        modify(dataObjs, DELETE, "-> db delte operation",
+                "Error deleting data by extended conditions from database");
     }
 
-    public void deleteBatch(List<VehicleModel> dataObjs, ConnectionModel connModel) {
-        try (Connection conn = Connector.getConnection(connModel)) {
-            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            conn.setAutoCommit(false);
-
-            int lastCommitedIdx = 0;
-
-            try (PreparedStatement pstmt = conn.prepareStatement(DELETE)) {
-                int operationsCount = 0;
-                for (int i = 0; i < dataObjs.size(); i++) {
-                    VehicleModel dataObj = dataObjs.get(i);
-
-                    pstmt.clearParameters();
-                    fillStmtByDataFromObj(pstmt, dataObj);
-                    pstmt.addBatch();
-                    operationsCount++;
-
-                    // Execute every BATCH_SIZE items.
-                    if (operationsCount % MAX_BATCH_SIZE == 0 || operationsCount == dataObjs.size()) {
-                        checkBatchExecution(pstmt.executeBatch());
-                        conn.commit();
-
-                        lastCommitedIdx++;
-                    }
-                }
-            } catch (SQLException e) {
-                checkConnectionState(e);
-                rollbackAndLog(conn, e);
-
-                List<VehicleModel> remainingData = dataObjs.subList(lastCommitedIdx, dataObjs.size());
-                LOG.warn("Batch failed at index {}. The remaining items {} will be processed sequentially.",
-                        lastCommitedIdx, remainingData.size());
-                deleteOneByOne(remainingData, conn);
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            throwDatabaseError("Error deleting data by extended conditions from database", e);
-        }
-    }
-
-    private void deleteOneByOne(List<VehicleModel> dataObjs, Connection conn)
-            throws SQLException {
-        conn.setAutoCommit(true);
-        try (PreparedStatement pstmt = conn.prepareStatement(DELETE)) {
-            for (VehicleModel dataObj : dataObjs) {
-                fillStmtByDataFromObj(pstmt, dataObj);
-                pstmt.execute();
-            }
-        }
-    }
-
-    private void deleteOneByOne(List<VehicleModel> dataObjs, ConnectionModel connModel) {
-        try (Connection conn = Connector.getConnection(connModel);
-                PreparedStatement pstmt = conn.prepareStatement(DELETE)) {
-            for (VehicleModel dataObj : dataObjs) {
-                fillStmtByDataFromObj(pstmt, dataObj);
-                pstmt.execute();
-            }
-        } catch (SQLException e) {
-            throwDatabaseError("Error deleting data by extended conditions from database", e);
-        }
-    }
-
-    public void delete(Long[] dataObjIds, ConnectionModel connModel) {
-        try (Connection conn = Connector.getConnection(connModel);
+    public void delete(Long[] dataObjIds, ConnectionModel model) {
+        try (Connection conn = Connector.getConnection(model);
                 PreparedStatement pstmt = conn.prepareStatement(DELETE_ANY)) {
             Array idArray = conn.createArrayOf(BIGINT, dataObjIds);
             pstmt.setArray(1, idArray);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throwDatabaseError("Error deleting data by ids from database", e);
+        }
+    }
+
+    private void modify(List<VehicleModel> dataObjs, String sql,
+            String threadName, String errorMsg) {
+        Collection<ConnectionModel> models = Config.getCurrent().getConnectionsForCurrentMode();
+        ThreadFactory factory = ThreadUtils.getVirtualThreadFactory(threadName);
+
+        boolean isBatch = dataObjs.size() >= MIN_BATCH_SIZE;
+
+        try (ExecutorService executor = Executors.newThreadPerTaskExecutor(factory)) {
+            for (ConnectionModel model : models) {
+                executor.submit(() -> {
+                    if (isBatch) {
+                        modifyByBatch(dataObjs, sql, errorMsg, model);
+                    } else {
+                        modifyOneByOne(dataObjs, sql, errorMsg, model);
+                    }
+                });
+            }
+        }
+    }
+
+    private void modifyByBatch(List<VehicleModel> dataObjs, String sql,
+            String errorMsg, ConnectionModel model) {
+        try (Connection conn = Connector.getConnection(model)) {
+            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            conn.setAutoCommit(false);
+
+            int lastCommitedIdx = 0;
+
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                int operationsCount = 0;
+                for (int i = 0; i < dataObjs.size(); i++) {
+                    VehicleModel dataObj = dataObjs.get(i);
+
+                    pstmt.clearParameters();
+                    fillStmtByDataFromObj(pstmt, dataObj);
+                    pstmt.addBatch();
+                    operationsCount++;
+
+                    // Execute every BATCH_SIZE items.
+                    if (operationsCount % MAX_BATCH_SIZE == 0 || operationsCount == dataObjs.size()) {
+                        checkBatchExecution(pstmt.executeBatch());
+                        conn.commit();
+
+                        lastCommitedIdx = i + 1;
+                    }
+                }
+            } catch (SQLException e) {
+                checkConnectionState(e);
+                rollbackAndLog(conn, e);
+
+                List<VehicleModel> remainingData = dataObjs.subList(lastCommitedIdx, dataObjs.size());
+                LOG.warn("Batch failed at index {}. The remaining items {} will be processed sequentially.",
+                        lastCommitedIdx, remainingData.size());
+                modifyOneByOne(remainingData, sql, conn);
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throwDatabaseError(errorMsg, e);
+        }
+    }
+
+    private void modifyOneByOne(List<VehicleModel> dataObjs, String sql, Connection conn)
+            throws SQLException {
+        conn.setAutoCommit(true);
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (VehicleModel dataObj : dataObjs) {
+                fillStmtByDataFromObj(pstmt, dataObj);
+                pstmt.execute();
+            }
+        }
+    }
+
+    private void modifyOneByOne(List<VehicleModel> dataObjs, String sql,
+            String errorMsg, ConnectionModel model) {
+        try (Connection conn = Connector.getConnection(model);
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (VehicleModel dataObj : dataObjs) {
+                fillStmtByDataFromObj(pstmt, dataObj);
+                pstmt.execute();
+            }
+        } catch (SQLException e) {
+            throwDatabaseError(errorMsg, e);
         }
     }
 
