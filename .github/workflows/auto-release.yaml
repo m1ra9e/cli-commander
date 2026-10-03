@@ -5,6 +5,13 @@ on:
     tags:
       - 'v*.*.*'
 
+# this is necessary for the auto release to build and have a zip file
+# automatically attached when the GitHub settings are configured as follows:
+# github.com->settings->actions-"Workflow permissions"
+#   = "Read repository contents and packages permissions"
+permissions:
+  contents: write
+
 jobs:
 
   release:

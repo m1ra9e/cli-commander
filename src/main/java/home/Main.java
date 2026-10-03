@@ -43,6 +43,7 @@ public final class Main {
             ExecutionTime.measure(Main::executeApplication, args);
         } catch (Exception e) {
             LOG.error("\nApplication {} execution error : {}", AppInfo.getNameAndVersion(), e);
+            System.exit(1);
         }
     }
 
@@ -50,6 +51,8 @@ public final class Main {
         setUncaughtExceptionProcessing();
 
         Options options = ArgsParser.parse(args);
+
+        // Config.readConfigs("config file(s) path");
         OptionsProcessor.process(options);
     }
 

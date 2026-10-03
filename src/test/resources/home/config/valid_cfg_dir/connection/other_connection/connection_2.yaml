@@ -1,0 +1,8 @@
+connections:
+  -
+    name : second2
+    host : localhost
+    port : 5433
+    database : dbname2
+    user : username2
+    pass : password2

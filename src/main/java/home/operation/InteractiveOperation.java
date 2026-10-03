@@ -44,8 +44,6 @@ public final class InteractiveOperation implements IOperation {
 
     private static final String USER_VALUES = "User values :" + LS + "%s";
 
-    private final SimpleConverter simpleConverter = new SimpleConverter();
-
     @Override
     public void run(Object values) {
         try (var scanner = new Scanner(System.in)) {
@@ -67,7 +65,7 @@ public final class InteractiveOperation implements IOperation {
     }
 
     private void convertAndLog(String textOfManyObjs, StringBuilder sb) {
-        List<VehicleModel> vehicles = simpleConverter.convertStringToObjs(textOfManyObjs);
+        List<VehicleModel> vehicles = SimpleConverter.convertToDataObjs(textOfManyObjs);
         vehicles.forEach(vehicle -> sb.append(vehicle).append(LS));
         LOG.info(USER_VALUES.formatted(sb.toString()));
     }

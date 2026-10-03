@@ -1,0 +1,17 @@
+# Missed required param: 'mode'
+
+connections:
+  -
+    name : first1
+    host : 127.0.0.1
+    port : 5432
+    database : dbname1
+    user : username1
+    pass : password1
+  -
+    name : second2
+    host : localhost
+    port : 5433
+    database : dbname2
+    user : username2
+    pass : password2

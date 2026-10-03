@@ -21,25 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
-package home.operation;
+package home.model;
 
-import java.util.LinkedHashSet;
+public enum ModeType {
 
-import home.converter.SimpleConverter;
-import home.model.VehicleModel;
+    MIRROR("mirror"),
+    SINGLE("single");
 
-public final class DisplayUniqueOperation extends AbstractDisplayOperation {
+    private final String typeName;
 
-    private static final String DASH = " - ";
+    private ModeType(String type) {
+        this.typeName = type;
+    }
 
-    @Override
-    protected String getFormattedMsg(Object unformattedObjMsg) {
-        String textOfManyObjs = unformattedObjMsg.toString();
-        var vehicles = new LinkedHashSet<VehicleModel>(SimpleConverter.convertToDataObjs(textOfManyObjs));
+    public String getTypeName() {
+        return typeName;
+    }
 
-        var sb = new StringBuilder();
-        vehicles.forEach(vehicle -> sb.append(DASH).append(vehicle.toString()).append(LS));
+    public static ModeType getModeType(String typeName) {
+        String typeNameFormatted = typeName.strip();
+        for (ModeType modeType : ModeType.values()) {
+            if (typeNameFormatted.equalsIgnoreCase(modeType.getTypeName())) {
+                return modeType;
+            }
+        }
 
-        return sb.toString();
+        throw new IllegalArgumentException("Wrong mode type received : " + typeName);
     }
 }

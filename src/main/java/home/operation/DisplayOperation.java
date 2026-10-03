@@ -33,7 +33,7 @@ public final class DisplayOperation extends AbstractDisplayOperation {
     @Override
     protected String getFormattedMsg(Object unformattedObjMsg) {
         String textOfManyObjs = unformattedObjMsg.toString();
-        List<VehicleModel> vehicles = new SimpleConverter().convertStringToObjs(textOfManyObjs);
+        List<VehicleModel> vehicles = SimpleConverter.convertToDataObjs(textOfManyObjs);
 
         var sb = new StringBuilder();
         vehicles.forEach(vehicle -> sb.append(vehicle.toString()).append(LS));

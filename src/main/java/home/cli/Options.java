@@ -27,11 +27,23 @@ import com.beust.jcommander.Parameter;
 
 public final class Options {
 
+    @Parameter(names = { "-del", "--delete" }, description = "Delete from databases input data")
+    private String dataForDeleteFromDb;
+
     @Parameter(names = { "-d", "--display" }, description = "Displaying input data")
     private String dataForDisplay;
 
-    @Parameter(names = { "-u", "--display-unique" }, description = "Displaying unique input data")
+    @Parameter(names = { "-du", "--display-unique" }, description = "Displaying unique input data")
     private String dataForDisplayUnique;
+
+    @Parameter(names = { "-ins", "--insert" }, description = "Insert to databases input data")
+    private String dataForInsertToDb;
+
+    @Parameter(names = { "-upd", "--update" }, description = "Update in databases input data")
+    private String dataForUpdateInDb;
+
+    @Parameter(names = { "-sel", "--select" }, description = "Select from databases data which contains sought values")
+    private String soughtValuesForSelectFromDb;
 
     @Parameter(names = { "-h", "--help" }, description = "Parameters information")
     private boolean isHelp;
@@ -44,12 +56,28 @@ public final class Options {
 
     private final AdditionalValues additionalValues = new AdditionalValues();
 
+    public String getDataForDeleteFromDb() {
+        return dataForDeleteFromDb;
+    }
+
     public String getDataForDisplay() {
         return dataForDisplay;
     }
 
     public String getDataForDisplayUnique() {
         return dataForDisplayUnique;
+    }
+
+    public String getDataForInsertToDb() {
+        return dataForInsertToDb;
+    }
+
+    public String getDataForUpdateInDb() {
+        return dataForUpdateInDb;
+    }
+
+    public String getSoughtValuesForSelectFromDb() {
+        return soughtValuesForSelectFromDb;
     }
 
     public boolean isHelp() {
